@@ -59,48 +59,51 @@ educationRouter.post("/list",
     }
 )
 
+
 /**
  * @description
  *      /education/create 로  post 요청시
  *      session에 등록된 user의 education 정보를 등록합니다.
  *
- * @param {institution, major, degree, period, startDate, endDate}
+ *      @param {institution, major, degree, period, startDate, endDate, final}
  */
 educationRouter.post("/create",
     async function (req, res, next) {
-      try {
-        const {institution ,major,degree,period,startDate,endDate} = req.body;
-        const user_id = req.currentUserId;
-        const user = User.findById({user_id})
-        user.then((user) => {
-          if(!user){
-            console.log('일치하는 유저가 없습니다.');
-            res.status(404).send({message:'일치하는 유저가 없습니다.'});
-          }
-          const education =
-              new EducationModel({
-                user: user._id,
-                institution:institution,
-                major:major,
-                degree:degree,
-                period:period,
-                startDate:startDate,
-                endDate:endDate
-              });
-          console.log(education);
+        try {
+            const {institution ,major,degree,period,startDate,endDate,final} = req.body;
+            const user_id = req.currentUserId;
+            const user = User.findById({user_id})
+            user.then((user) => {
+                if(!user){
+                    console.log('일치하는 유저가 없습니다.');
+                    res.status(404).send({message:'일치하는 유저가 없습니다.'});
+                }
+                const education =
+                    new EducationModel({
+                        user: user._id,
+                        institution:institution,
+                        major:major,
+                        degree:degree,
+                        period:period,
+                        startDate:startDate,
+                        endDate:endDate,
+                        final:final
+                    });
+                console.log(education);
 
-          const created = education.save();
-          if(!created){
-            console.log('데이터베이스 입력에 실패했습니다.');
-            res.status(404).json({message: '데이터베이스 입력에 실패했습니다.'});
-            return;
-          }
-          res.send('데이터베이스 입력에 성공했습니다.');
-        });
-      } catch (error) {
-        next(error);
-      }
+                const created = education.save();
+                if(!created){
+                    console.log('데이터베이스 입력에 실패했습니다.');
+                    res.status(404).json({message: '데이터베이스 입력에 실패했습니다.'});
+                    return;
+                }
+                res.send('데이터베이스 입력에 성공했습니다.');
+            });
+        } catch (error) {
+            next(error);
+        }
     }
 );
+
 
 export { educationRouter };
