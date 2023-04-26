@@ -1,29 +1,39 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 
 const EducationSchema = new Schema(
   {
-    school: {
+    user: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    institution: {
       type: String,
       required: true,
     },
+    // credits:{
+    //     type: Number,
+    //     required: true,
+    // },
     degree: {
       type: String,
       required: true,
     },
-    field: {
+    major: {
       type: String,
       required: true,
     },
-    startYear: {
-      type: Number,
+    startDate: {
+      type: Date,
       required: true,
     },
-    endYear: {
-      type: Number,
-      required: false,
+    endDate: {
+      type: Date,
+      required: true,
     },
-    description: {
+    final: {
       type: String,
+      require: true,
     },
   },
   {
@@ -31,6 +41,6 @@ const EducationSchema = new Schema(
   }
 );
 
-const EducationModel = model("Education", EducationSchema);
+const EducationModel = model("education", EducationSchema);
 
 export { EducationModel };
