@@ -1,36 +1,47 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
+
 
 const EducationSchema = new Schema(
-  {
-    school: {
-      type: String,
-      required: true,
+    {
+        user:{
+            type: mongoose.Types.ObjectId,
+            ref:'User',
+            required: true,
+        },
+        institution:{
+            type: String,
+            required: true,
+        },
+        // credits:{
+        //     type: Number,
+        //     required: true,
+        // },
+        degree:{
+            type:String,
+            required:true,
+        },
+        major:{
+            type: String,
+            required: true,
+        },
+        startDate:{
+            type: Date,
+            required:true,
+        },
+        endDate:{
+            type:Date,
+            required:true,
+        },
+        final:{
+            type:String,
+            require: true,
+        }
     },
-    degree: {
-      type: String,
-      required: true,
-    },
-    field: {
-      type: String,
-      required: true,
-    },
-    startYear: {
-      type: Number,
-      required: true,
-    },
-    endYear: {
-      type: Number,
-      required: false,
-    },
-    description: {
-      type: String,
-    },
-  },
-  {
-    timestamps: true,
-  }
+    {
+        timestamps: true,
+    }
 );
 
-const EducationModel = model("Education", EducationSchema);
+const EducationModel = model("education", EducationSchema);
 
 export { EducationModel };

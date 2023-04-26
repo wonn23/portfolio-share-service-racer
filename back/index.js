@@ -2,7 +2,7 @@ import 'dotenv/config'
 import { app } from "./src/app";
 
 const PORT = process.env.SERVER_PORT || 5000;
-
-app.listen(PORT, () => {
+const HOST= process.env.HOST
+app.listen(PORT,HOST, () => {
   console.log(`정상적으로 서버를 시작하였습니다.  http://localhost:${PORT}`);
 });
