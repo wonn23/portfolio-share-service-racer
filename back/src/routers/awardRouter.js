@@ -1,6 +1,7 @@
 import is from "@sindresorhus/is";
 import { Router } from "express";
 import { login_required } from "../middlewares/login_required";
+import { User, Award } from "../db";
 import { AwardService } from "../services/awardService";
 
 const awardRouter = Router();
@@ -15,18 +16,19 @@ awardRouter.post("/award/create", async function (req, res, next) {
     }
 
     // req (request) 에서 데이터 가져오기
-    const user_id = req.body.user_id;
+    const userId = req.currentUserId;
     const title = req.body.title;
     const description = req.body.description;
+    const user = Award.findById({ userId });
 
     // 위 데이터를 유저 db에 추가하기
     const newAward = await AwardService.addAward({
-      user_id,
+      userId,
       title,
       description,
     });
 
-    res.status(201).json(newAward);
+    res.status(201).send(newAward);
   } catch (error) {
     next(error);
   }
@@ -92,12 +94,12 @@ awardRouter.delete("/awards/:id", async function (req, res, next) {
   }
 });
 
-awardRouter.get("/awardlist/:user_id", async function (req, res, next) {
+awardRouter.get("/awardlist/:userId", async function (req, res, next) {
   try {
     // 특정 사용자의 전체 수상 목록을 얻음
     // @ts-ignore
-    const user_id = req.params.user_id;
-    const awardList = await AwardService.getAwardList({ user_id });
+    const userId = req.params.userId;
+    const awardList = await AwardService.getAwardList({ userId });
     res.status(200).send(awardList);
   } catch (error) {
     next(error);

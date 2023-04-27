@@ -1,9 +1,12 @@
 import cors from "cors";
 import express from "express";
-import { userAuthRouter  } from "./routers/userRouter";
-import { educationRouter  } from "./routers/educationRouter";
+import { awardRouter } from "./routers/awardRouter";
+import { cerificateRouter } from "./routers/certificateRouter";
+import { educationRouter } from "./routers/educationRouter";
+import { projectRouter } from "./routers/projectRouter";
+import { userAuthRouter } from "./routers/userRouter";
 import { errorMiddleware } from "./middlewares/errorMiddleware";
-import {login_required } from "./middlewares/login_required";
+import { login_required } from "./middlewares/login_required";
 const app = express();
 
 // CORS 에러 방지
@@ -19,11 +22,11 @@ app.use(express.urlencoded({ extended: false }));
 app.get("/", (req, res) => {
   res.send("안녕하세요, 레이서 프로젝트 API 입니다.");
 });
-app.get("/education",);
+app.get("/education");
 
 // router, service 구현 (userAuthRouter는 맨 위에 있어야 함.)
 app.use(userAuthRouter);
-app.use('/education',educationRouter);
+app.use("/education", educationRouter);
 
 // 순서 중요 (router 에서 next() 시 아래의 에러 핸들링  middleware로 전달됨)
 app.use(errorMiddleware);
