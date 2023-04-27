@@ -1,6 +1,6 @@
-import { Router } from "express";
 import { login_required } from "../middlewares/login_required";
-import { User, Education } from "../db";
+import { Router } from "express";
+import { User } from "../db";
 import { EducationModel } from "../db/schemas/education";
 
 const educationRouter = Router();
