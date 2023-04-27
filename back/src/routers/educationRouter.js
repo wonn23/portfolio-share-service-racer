@@ -72,7 +72,7 @@ educationRouter.post("/create", async function (req, res, next) {
         res.status(404).send({ message: "일치하는 유저가 없습니다." });
       }
       const education = new EducationModel({
-        user: user._id,
+        user: user_id,
         institution: institution,
         major: major,
         degree: degree,

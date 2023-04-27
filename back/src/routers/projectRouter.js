@@ -22,6 +22,8 @@ projectRouter.post("/project/create", async function (req, res, next) {
       title,
       description,
     });
+
+    res.staus(201).json(newProject);
   } catch (error) {
     next(error);
   }
