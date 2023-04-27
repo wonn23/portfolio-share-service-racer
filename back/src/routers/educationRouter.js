@@ -5,7 +5,7 @@ import { EducationModel } from "../db/schemas/education";
 
 const educationRouter = Router();
 educationRouter.use(login_required);
-educationRouter.post("/", async function (req, res, next) {
+educationRouter.post("/", login_required, async function (req, res, next) {
   try {
     const user_id = req.currentUserId;
     console.log(req.body);
@@ -23,12 +23,13 @@ educationRouter.post("/list", async function (req, res, next) {
     next(e);
   }
 });
+
 educationRouter.post(
   "/create",
   login_required,
   async function (req, res, next) {
     try {
-      const { institution, major, degree, period, startDate, endDate, final } =
+      const { institution, major, degree, startDate, endDate, final } =
         req.body;
       const user_id = req.currentUserId;
       const user = User.findById({ user_id });
@@ -39,13 +40,13 @@ educationRouter.post(
         }
         const userobj = user._id;
         const education = new EducationModel({
-          user: user._id,
+          user: userobj,
           institution: institution,
           major: major,
           degree: degree,
-          period: period,
           startDate: startDate,
           endDate: endDate,
+          final: final,
         });
         console.log(education);
 
@@ -55,6 +56,7 @@ educationRouter.post(
           res.send("데이터베이스 입력에 실패했습니다.");
           return;
         }
+        res.status(201).json(created);
         res.send("데이터베이스 입력에 성공했습니다.");
       });
     } catch (error) {

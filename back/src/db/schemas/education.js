@@ -11,10 +11,6 @@ const EducationSchema = new Schema(
       type: String,
       required: true,
     },
-    // credits:{
-    //     type: Number,
-    //     required: true,
-    // },
     degree: {
       type: String,
       required: true,
@@ -33,7 +29,7 @@ const EducationSchema = new Schema(
     },
     final: {
       type: String,
-      require: true,
+      required: true,
     },
   },
   {
