@@ -81,7 +81,7 @@ projectRouter.delete("/projects/:id", async function (req, res, next) {
   }
 });
 
-awardRouter.get("/awardlist/:user_id", async function (req, res, next) {
+projectRouter.get("/projectlist/:user_id", async function (req, res, next) {
   try {
     const user_id = req.params.user_id;
     const projectList = await ProjectService.getProjectList({ user_id });

@@ -1,26 +1,10 @@
 import { login_required } from "../middlewares/login_required";
 import { Router } from "express";
 import { User } from "../db";
-import { EducationModel } from "../db/schemas/education";
+import { Education } from "../db/models/Education";
 
 const educationRouter = Router();
 educationRouter.use(login_required);
-
-/**
- * @description
- *      응답 테스트 라우터입니다.
- */
-educationRouter.post("/test", async function (req, res, next) {
-  try {
-    const user_id = req.currentUserId;
-    console.log(req.body);
-
-    res.status(200).json({ message: "" });
-    console.log(user_id);
-  } catch (error) {
-    next(error);
-  }
-});
 
 /**
  * @description
@@ -97,31 +81,23 @@ educationRouter.post("/create", async function (req, res, next) {
 });
 
 // education 수정
-educationRouter.patch(
-  "/:user_id/edit",
-  login_required,
-  asyncHandler(async (req, res, next) => {
-    const { user_id } = req.params;
-    if (user_id != req.currentUserId) {
-      throw new Error("수정할 수 있는 권한이 없습니다.");
-    }
-    const { institution, major, degree, period, startDate, endDate, final } =
-      req.body;
-    const education = {
-      institution,
-      major,
-      degree,
-      period,
-      startDate,
-      endDate,
-      final,
-    };
-    const editEducation = await educationService.editEducation({ education });
-    if (editEducation.errorMessage) {
-      throw new Error(editEducation.errorMssage);
-    }
-    res.status(200).send(editEducation);
-  })
-);
+educationRouter.patch("/:id/edit", async (req, res, next) => {
+  const { id } = req.params;
+  const { fieldToUpdate, newValue } = req.body;
+  try {
+    // Call the update method of the Education model
+    const updatedEducation = await Education.update({
+      user_id: id,
+      fieldToUpdate,
+      newValue,
+    });
+
+    res.status(200).json(updatedEducation);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+    next(error);
+  }
+});
 
 export { educationRouter };
