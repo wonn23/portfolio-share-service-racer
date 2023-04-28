@@ -96,4 +96,32 @@ educationRouter.post("/create", async function (req, res, next) {
   }
 });
 
+// education 수정
+educationRouter.patch(
+  "/:user_id/edit",
+  login_required,
+  asyncHandler(async (req, res, next) => {
+    const { user_id } = req.params;
+    if (user_id != req.currentUserId) {
+      throw new Error("수정할 수 있는 권한이 없습니다.");
+    }
+    const { institution, major, degree, period, startDate, endDate, final } =
+      req.body;
+    const education = {
+      institution,
+      major,
+      degree,
+      period,
+      startDate,
+      endDate,
+      final,
+    };
+    const editEducation = await educationService.editEducation({ education });
+    if (editEducation.errorMessage) {
+      throw new Error(editEducation.errorMssage);
+    }
+    res.status(200).send(editEducation);
+  })
+);
+
 export { educationRouter };
