@@ -27,10 +27,6 @@ const EducationSchema = new Schema(
       type: Date,
       required: true,
     },
-    final: {
-      type: String,
-      required: true,
-    },
   },
   {
     timestamps: true,

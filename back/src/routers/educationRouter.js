@@ -1,6 +1,7 @@
 import { login_required } from "../middlewares/login_required";
 import { Router } from "express";
 import { User } from "../db";
+import { EducationModel } from "../db/schemas/education";
 import { Education } from "../db/models/Education";
 
 const educationRouter = Router();
@@ -27,7 +28,7 @@ educationRouter.post("/list", async function (req, res, next) {
       if (!u) {
         res.status(404).json({ message: "유저를 찾을수 없습니다." });
       }
-      const finded = EducationModel.find({ user: u._id });
+      const finded = EducationModel.find({ user: user_id });
       finded.then((data) => {
         res.send(data);
       });
@@ -42,12 +43,11 @@ educationRouter.post("/list", async function (req, res, next) {
  *      /education/create 로  post 요청시
  *      session에 등록된 user의 education 정보를 등록합니다.
  *
- *      @param {institution, major, degree, period, startDate, endDate, final}
+ *      @param {institution, major, degree, period, startDate, endDate}
  */
 educationRouter.post("/create", async function (req, res, next) {
   try {
-    const { institution, major, degree, period, startDate, endDate, final } =
-      req.body;
+    const { institution, major, degree, startDate, endDate } = req.body;
     const user_id = req.currentUserId;
     const user = User.findById({ user_id });
     user.then((user) => {
@@ -60,10 +60,8 @@ educationRouter.post("/create", async function (req, res, next) {
         institution: institution,
         major: major,
         degree: degree,
-        period: period,
         startDate: startDate,
         endDate: endDate,
-        final: final,
       });
       console.log(education);
 
@@ -81,7 +79,7 @@ educationRouter.post("/create", async function (req, res, next) {
 });
 
 // education 수정
-educationRouter.patch("/:id/edit", async (req, res, next) => {
+educationRouter.patch("/:id", async (req, res, next) => {
   const { id } = req.params;
   const { fieldToUpdate, newValue } = req.body;
   try {
