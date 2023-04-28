@@ -26,6 +26,11 @@ class Education {
     );
     return updatedUser;
   }
+  // education 삭제
+  static async deleteById({ educationId }) {
+    const deletedEducation = await EducationModel.findByIdAndDelete(educationId);
+    return deletedEducation;
+  }
 }
 
 export { Education };
