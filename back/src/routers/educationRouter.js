@@ -43,7 +43,7 @@ educationRouter.post("/list", async function (req, res, next) {
  *      /education/create 로  post 요청시
  *      session에 등록된 user의 education 정보를 등록합니다.
  *
- *      @param {institution, major, degree, period, startDate, endDate}
+ *      @param {institution, major, degree, startDate, endDate}
  */
 educationRouter.post("/create", async function (req, res, next) {
   try {
