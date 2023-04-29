@@ -2,6 +2,7 @@ import { login_required } from "../middlewares/login_required";
 import { Router } from "express";
 import { User } from "../db";
 import { EducationModel } from "../db/schemas/education";
+import { Education } from "../db/models/Education";
 import { educationService } from "../services/educationService";
 
 const educationRouter = Router();
@@ -102,5 +103,39 @@ educationRouter.patch("/:id", async function (req, res, next) {
     next(error);
   }
 });
+
+educationRouter.delete(
+  "/:_id/",
+  login_required,
+  async function (req, res, next) {
+    const educationId = req.params._id;
+    try {
+      const result = await educationService.deleteEducation({ educationId });
+      if (result.errorMessage) {
+        throw new Error(result.errorMessage);
+      }
+      res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+educationRouter.delete(
+  "/:_id/",
+  login_required,
+  async function (req, res, next) {
+    const educationId = req.params._id;
+    try {
+      const result = await educationService.deleteEducation({ educationId });
+      if (result.errorMessage) {
+        throw new Error(result.errorMessage);
+      }
+      res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export { educationRouter };
