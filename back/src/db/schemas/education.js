@@ -24,7 +24,23 @@ const EducationSchema = new Schema(
         timestamps: true,
     }
 );
-
+// user: {
+//     type: mongoose.Types.ObjectId,
+//         ref: "User",
+//         required: true,
+// },
+// school: {
+//     type: String,
+//         required: true,
+// },
+// major: {
+//     type: String,
+//         required: true,
+// },
+// status: {
+//     type: String,
+//         required: true,
+// },
 const EducationModel = model("education", EducationSchema);
 
 export { EducationModel };

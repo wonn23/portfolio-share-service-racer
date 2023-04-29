@@ -21,7 +21,6 @@ export function ErrorHandler(error, req, res, next){
     }
     else if(error.status === 503){
         res.status(502).json({message:"서버가 준비되지 않았습니다."});
-
     }
     else if(error.status === 504){
         res.status(502).json({message:"서버 응답시간이 지났습니다."});
