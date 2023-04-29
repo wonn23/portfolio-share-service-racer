@@ -3,7 +3,6 @@ import { Router } from "express";
 import { User } from "../db";
 import { EducationModel } from "../db/schemas/education";
 import { Education } from "../db/models/Education";
-import { EducationModel } from "../db/schemas/education";
 import { educationService } from "../services/educationService";
 
 const educationRouter = Router();
