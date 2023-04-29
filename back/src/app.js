@@ -1,13 +1,13 @@
 import cors from "cors";
 import express from "express";
+
 import { awardRouter } from "./routers/awardRouter";
 import { cerificateRouter } from "./routers/certificateRouter";
 import { educationRouter } from "./routers/educationRouter";
 import { projectRouter } from "./routers/projectRouter";
 import { userAuthRouter } from "./routers/userRouter";
-import { errorMiddleware } from "./middlewares/errorMiddleware";
-import { login_required } from "./middlewares/login_required";
-import { ErrorHandler } from "./middlewares/errorHandler";
+
+import { errorHandler } from "./middlewares/errorHandler";
 import { tokenValidator } from "./middlewares/tokenValidator";
 const app = express();
 
@@ -37,6 +37,6 @@ app.use("/award", awardRouter);
 // app.get("/project")
 // app.use("/certificate", projectRouter);
 
-app.use(ErrorHandler);
+app.use(errorHandler);
 
 export { app };

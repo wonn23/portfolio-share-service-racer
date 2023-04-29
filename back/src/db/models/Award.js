@@ -22,9 +22,9 @@ class Award {
     const option = { returnOriginal: false };
 
     const updatedAward = await AwardModel.findOneAndUpdate(
-      filter,
-      update,
-      option
+        filter,
+        update,
+        option
     );
     return updatedAward;
   }

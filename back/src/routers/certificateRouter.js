@@ -1,10 +1,10 @@
 import is from "@sindresorhus/is";
 import { Router } from "express";
-import { login_required } from "../middlewares/login_required";
+import { tokenValidator } from "../middlewares/tokenValidator";
 import { CertificateService } from "../services/certificateService";
 
 const certificateRouter = Router();
-certificateRouter.use(login_required);
+certificateRouter.use(tokenValidator);
 
 certificateRouter.post("/certificate/create", async function (req, res, next) {
   try {

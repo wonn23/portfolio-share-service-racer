@@ -1,12 +1,11 @@
-import { login_required } from "../middlewares/login_required";
 import { Router } from "express";
 import { User } from "../db";
 import { EducationModel } from "../db/schemas/education";
-import { Education } from "../db/models/Education";
+import { tokenValidator } from "../middlewares/tokenValidator";
 import { educationService } from "../services/educationService";
 
 const educationRouter = Router();
-educationRouter.use(login_required);
+educationRouter.use(tokenValidator);
 
 /**
  * @description
@@ -106,7 +105,7 @@ educationRouter.patch("/:id", async function (req, res, next) {
 
 educationRouter.delete(
   "/:_id/",
-  login_required,
+    tokenValidator,
   async function (req, res, next) {
     const educationId = req.params._id;
     try {
@@ -123,7 +122,7 @@ educationRouter.delete(
 
 educationRouter.delete(
   "/:_id/",
-  login_required,
+    tokenValidator,
   async function (req, res, next) {
     const educationId = req.params._id;
     try {
