@@ -25,8 +25,8 @@ app.get("/education");
 app.use(userAuthRouter);
 app.use("/education", educationRouter);
 
-// app.get("/education");
-// app.use("/education", educationRouter);
+app.get("/education");
+app.use("/education", educationRouter);
 
 app.get("/award");
 app.use("/award", awardRouter);
