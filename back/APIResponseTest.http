@@ -1,0 +1,48 @@
+### http://localhost:5000/user/register 테스트
+POST http://localhost:5000/user/register
+Content-Type: application/json
+
+{
+  "email": "test10@test.com",
+  "name": "test",
+  "password": "1234"
+}
+
+
+### http://localhost:5000/user/login
+POST http://localhost:5000/user/login
+Content-Type: application/json
+
+{
+  "email": "test5@test.com",
+  "name": "test",
+  "password": "1234"
+}
+
+
+### /user/list
+POST http://localhost:5000/user/list
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMzJlODIwZmEtN2Q2MC00OTBiLTkwMzQtOWRhOTEzYmYwNGMwIiwiaWF0IjoxNjgyNzUxNDM3fQ.tIM18TFIavjTgF18rx-1PCcNGbvgIRWJiS3cHX8u3Wg
+
+{
+
+}
+
+### /user/current
+POST http://localhost:5000/user/current
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMzJlODIwZmEtN2Q2MC00OTBiLTkwMzQtOWRhOTEzYmYwNGMwIiwiaWF0IjoxNjgyNzUxNDM3fQ.tIM18TFIavjTgF18rx-1PCcNGbvgIRWJiS3cHX8u3Wg
+
+{
+
+}
+
+### /user/update
+POST http://localhost:5000/user/update
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMzJlODIwZmEtN2Q2MC00OTBiLTkwMzQtOWRhOTEzYmYwNGMwIiwiaWF0IjoxNjgyNzUxNDM3fQ.tIM18TFIavjTgF18rx-1PCcNGbvgIRWJiS3cHX8u3Wg
+
+{
+  "description": "설명입니다."
+}

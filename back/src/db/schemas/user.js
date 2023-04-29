@@ -1,32 +1,44 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 
 const UserSchema = new Schema(
-  {
-    id: {
-      type: String,
-      required: true,
+    {
+        id: {
+            type: String,
+            required: true,
+        },
+        email: {
+            type: String,
+            required: true,
+        },
+        name: {
+            type: String,
+            required: true,
+        },
+        password: {
+            type: String,
+            required: true,
+        },
+        description: {
+            type: String,
+            required: false,
+            default: "none",
+        },
+        award:[
+            {type: mongoose.Types.ObjectId, required: true, ref: "Award"}
+        ],
+        certificate:[
+            {type: mongoose.Types.ObjectId, required: true, ref: "Certificate"}
+        ],
+        education: [
+            { type: mongoose.Types.ObjectId, required: true, ref: "Education" }
+        ],
+        project:[
+            {type: mongoose.Types.ObjectId, required: true, ref: "Project"}
+        ]
     },
-    email: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: false,
-      default: "설명이 아직 없습니다. 추가해 주세요.",
-    },
-  },
-  {
-    timestamps: true,
-  }
+    {
+        timestamps: true,
+    }
 );
 
 const UserModel = model("User", UserSchema);

@@ -1,5 +1,5 @@
 {
-  "name": "cafe-server",
+  "name": "team-project",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/"
+    "url": ""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/"
+    "url": ""
   },
-  "homepage": "https://github.com/",
+  "homepage": "",
   "dependencies": {
     "@sindresorhus/is": "^4.2.0",
     "bcrypt": "^5.0.1",
