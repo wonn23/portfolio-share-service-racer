@@ -1,13 +1,10 @@
 import mongoose, { Schema, model } from "mongoose";
 
-const AwardSchema = new Schema(
+const Award = new Schema(
   {
-    id: {
-      type: String,
-      required: true,
-    },
-    user_id: {
-      type: String,
+    user: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     title: {
@@ -24,6 +21,6 @@ const AwardSchema = new Schema(
   }
 );
 
-const AwardModel = model("Award", AwardSchema);
+const AwardModel = model("Award", Award);
 
 export { AwardModel };

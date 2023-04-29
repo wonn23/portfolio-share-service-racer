@@ -2,27 +2,24 @@ import mongoose, { Schema, model } from "mongoose";
 
 const CertificateSchema = new Schema(
   {
-    id: {
-        type: String,
-        required: true,
-      },
-      user_id: {
-        type: String,
-        required: true,
-      },
-      title: {
-        type: String,
-        required: true,
-      },
-      description: {
-        type: String,
-        required: true,
-      },
+    user: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    {
-      timestamps: true,
-    }
-  );
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const CertificateModel = model("certificate", CertificateSchema);
 

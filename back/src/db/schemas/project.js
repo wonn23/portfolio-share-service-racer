@@ -2,8 +2,9 @@ import mongoose, { Schema, model } from "mongoose";
 
 const ProjectSchema = new Schema(
   {
-    user_id: {
-      type: String,
+    user: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     title: {
@@ -13,7 +14,7 @@ const ProjectSchema = new Schema(
     description: {
       type: String,
       required: false,
-      default: "설명없습니다. 추가하세요.",
+      default: "none",
     },
   },
   {
