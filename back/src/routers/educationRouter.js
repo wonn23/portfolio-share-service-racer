@@ -2,7 +2,7 @@ import { login_required } from "../middlewares/login_required";
 import { Router } from "express";
 import { User } from "../db";
 import { EducationModel } from "../db/schemas/education";
-import { Education } from "../db/models/Education";
+import { educationService } from "../services/educationService";
 
 const educationRouter = Router();
 educationRouter.use(login_required);
@@ -79,21 +79,26 @@ educationRouter.post("/create", async function (req, res, next) {
 });
 
 // education 수정
-educationRouter.patch("/:id", async (req, res, next) => {
-  const { id } = req.params;
-  const { fieldToUpdate, newValue } = req.body;
+educationRouter.patch("/:id", async function (req, res, next) {
   try {
-    // Call the update method of the Education model
-    const updatedEducation = await Education.update({
-      user_id: id,
-      fieldToUpdate,
-      newValue,
-    });
-
-    res.status(200).json(updatedEducation);
+    const userId = req.currentUserId;
+    const { educationId, institution, degree, major, startDate, endDate } =
+      req.body;
+    const filter = { user: userId, _id: educationId };
+    const update = { institution, degree, major, startDate, endDate };
+    const option = { new: true };
+    const editedEducation = await EducationModel.findOneAndUpdate(
+      filter,
+      update,
+      option
+    );
+    if (!editedEducation) {
+      const errorMessage =
+        "해당 학력 데이터는 없습니다. 다시 한 번 확인해 주세요.";
+      throw new Error(errorMessage);
+    }
+    res.status(200).send(editedEducation);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
     next(error);
   }
 });

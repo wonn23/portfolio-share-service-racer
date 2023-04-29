@@ -14,6 +14,18 @@ class Education {
   }
 
   // education 수정
+  static async editEducation({ userId, educationId, education }) {
+    const filter = { user: userId, _id: educationId };
+    const update = { ...education };
+    const option = { new: true };
+    const editedEducation = await EducationModel.findOneAndUpdate(
+      filter,
+      update,
+      option
+    );
+    return editedEducation;
+  }
+
   static async update({ user_id, fieldToUpdate, newValue }) {
     const filter = { id: user_id };
     const update = { [fieldToUpdate]: newValue };
