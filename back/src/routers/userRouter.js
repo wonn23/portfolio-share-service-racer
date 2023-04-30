@@ -114,6 +114,30 @@ userAuthRouter.post(
         }
     }
 );
+
+userAuthRouter.get(
+    "/user/current",
+    tokenValidator,
+    async function (req, res, next) {
+        try {
+            const user_id = req.currentUserId;
+            if(!user_id){
+                res.status(404).json({message:"유저를 찾을 수 없습니다."})
+            }
+            const current = await userAuthService.getUserInfo({
+                user_id,
+            });
+
+            if (current.errorMessage) {
+                throw new Error(current.errorMessage);
+            }
+            console.log(`id : ${current._id} name: ${current.name}`);
+            res.status(200).send(current);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 /**
  * @description
  *      user의 세션정보를 조회하여
