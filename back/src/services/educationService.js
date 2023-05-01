@@ -2,27 +2,8 @@ import { Education } from "../db";
 import { v4 as uuidv4 } from "uuid";
 
 class educationService {
-  static async addEducation({
-    user,
-    institution,
-    degree,
-    major,
-    startDate,
-    endDate,
-  }) {
-    const id = uuidv4();
-    const newEducation = {
-      id,
-      user,
-      institution,
-      degree,
-      major,
-      startDate,
-      endDate,
-    };
-    const createdEducation = await Education.createEducation({ newEducation });
-    createdEducation.errorMessage = null;
-    return createdEducation;
+  static async addEducation({ education }) {
+    return await Education.addEducation({ education });
   }
 
   static async getEducation({ userId }) {
