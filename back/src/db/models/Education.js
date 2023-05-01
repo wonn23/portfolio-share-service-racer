@@ -3,8 +3,7 @@ import { EducationModel } from "../schemas/education";
 class Education {
   // education 생성
   static async addEducation({ education }) {
-    const createdEducation = await EducationModel.create(education);
-    return createdEducation;
+    return await EducationModel.create(education);
   }
 
   static async findById({ user_id }) {
