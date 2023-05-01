@@ -17,7 +17,7 @@ educationRouter.use(tokenValidator);
  *      특정 user의 모든 education 정보를
  *      Array 로 응답합니다.
  *
- * @param {email:"String"}
+ * @param {email: "String"}
  */
 educationRouter.post("/list", async function (req, res, next) {
   try {
@@ -60,7 +60,7 @@ educationRouter.post("/create", async function (req, res, next) {
       });
       return;
     }
-    const { userId, school, major, status } = req.body;
+    const { userId, school, major, status } = req.body; // userId 오브젝트 아이디 아님
     const user_id = req.currentUserId;
 
     const user = await userAuthService.getUserInfo({ user_id });
@@ -88,7 +88,7 @@ educationRouter.post("/create", async function (req, res, next) {
 });
 
 // education 수정
-educationRouter.patch("/:id/edit", async (req, res, next) => {
+educationRouter.patch("/:id", async (req, res, next) => {
   const { id } = req.params;
   const { fieldToUpdate, newValue } = req.body;
   try {
@@ -107,7 +107,7 @@ educationRouter.patch("/:id/edit", async (req, res, next) => {
   }
 });
 
-/**
+/*
  * @description
  *      /education/update 로 Post 요청시
  *      userid,school,major,status
@@ -116,6 +116,7 @@ educationRouter.patch("/:id/edit", async (req, res, next) => {
  *      @params
  *      {userId,school, major, status}
  */
+
 educationRouter.post("/update", async (req, res, next) => {
   const params = Object.values(req.body);
 
