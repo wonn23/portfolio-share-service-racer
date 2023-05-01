@@ -1,25 +1,34 @@
 import mongoose, { Schema, model } from "mongoose";
 
 const ProjectSchema = new Schema(
-  {
-    user: {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
-      required: true,
+    {
+        user: {
+            type: mongoose.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+        projectid:{
+          type:String,
+          required: true,
+        },
+        title: {
+            type: String,
+            required: true,
+        },
+        description: {
+            type: String,
+            required: false,
+            default: "",
+        },
+        url:{
+            type:String,
+            required: false,
+            default: "",
+        }
     },
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: false,
-      default: "none",
-    },
-  },
-  {
-    timestamps: true,
-  }
+    {
+        timestamps: true,
+    }
 );
 
 const ProjectModel = model("Project", ProjectSchema);

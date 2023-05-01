@@ -1,94 +1,128 @@
-import is from "@sindresorhus/is";
-import { Router } from "express";
-import { tokenValidator } from "../middlewares/tokenValidator";
-import { ProjectService } from "../services/projectService";
+import {Router} from "express";
+import {tokenValidator} from "../middlewares/tokenValidator";
+import {userAuthService} from "../services/userService";
+import {validationParams} from "../utils/parameterValidator";
+
+import {ProjectModel} from "../db/schemas/project";
+import { v4 as uuidv4 } from "uuid";
+import {projectService} from "../services/projectService";
+import {User} from "../db";
+
 
 const projectRouter = Router();
 projectRouter.use(tokenValidator);
 
-projectRouter.post("/project/create", async function (req, res, next) {
-  try {
-    if (is.emptyObject(req.body)) {
-      throw new Error(
-        "headers의 Content-Type을 application/json으로 설정해주세요"
-      );
-    }
-    const user_id = req.body.user_id;
-    const title = req.body.title;
-    const description = req.body.description;
+projectRouter.post("/add",
+    async (req, res, next) => {
+    try{
+        const params = Object.values(req.body);
+        if(!validationParams(params))
+        {
+            console.log('비어있는 데이터가 존재합니다. 확인후 요청해주세요.');
+            res.status(404).send({message:'비어있는 데이터가 존재합니다. 확인후 요청해주세요.'});
+            return;
+        }
+        const { title, description, url } = req.body;
+        const user_id = req.currentUserId;
 
-    const newProject = await ProjectService.addProject({
-      user_id,
-      title,
-      description,
+
+        const user = await userAuthService.getUserInfo({user_id});
+        const projectId = uuidv4()
+        console.log(`user Service : ${user._id}`);
+        const project =
+            new ProjectModel({
+                user:user._id,
+                projectid: projectId,
+                title:title,
+                description:description,
+                url:url
+            });
+
+        const added = await projectService.addProject({project});
+        if(!added){
+            console.log('데이터베이스 입력에 실패했습니다.');
+            res.status(404).json({message: '데이터베이스 입력에 실패했습니다.'});
+            return;
+        }
+        console.log('데이터베이스 입력에 성공했습니다.');
+        res.status(200).json({message:'데이터베이스 입력 되었습니다.'});
+
+    } catch (error) {
+    next(error);
+}
+
+});
+
+projectRouter.post("/list",
+    async (req, res, next) => {
+    try {
+        const user_id = req.currentUserId;
+        const user = User.findById({ user_id });
+
+        user.then((u) => {
+            if (!u) {
+                res.status(404).json({ message: "유저를 찾을수 없습니다." });
+            }
+            const finded = ProjectModel.find({ user: u._id });
+            finded.then((data) => {
+                res.send(data);
+            });
+        });
+    } catch (e) {
+    next(e);
+}
+
+});
+
+projectRouter.post("/update",
+    async (req, res, next) => {
+    try {
+        const params = Object.values(req.body);
+        if(!validationParams(params))
+        {
+            console.log('비어있는 데이터가 존재합니다. 확인후 요청해주세요.');
+            res.status(404).send({message:'비어있는 데이터가 존재합니다. 확인후 요청해주세요.'});
+            return;
+        }
+        const {projectid,title, description, url } = req.body;
+        const user_id = req.body.id
+
+        const toUpdate = { title, description, url };
+
+        await projectService.setProject({ projectid, toUpdate })
+            .then((pro) => {
+                if (pro.errorMessage) {
+                    res.status(404).json({message:"유저를 찾을 수 없습니다."})
+                }
+                res.status(200).json(pro);
+            });
+    }catch (e){
+        console.log(e)
+    }
+});
+
+projectRouter.post("/delete",
+    async (req, res, next) => {
+        try {
+            const params = Object.values(req.body);
+            if(!validationParams(params))
+            {
+                console.log('비어있는 데이터가 존재합니다. 확인후 요청해주세요.');
+                res.status(404).send({message:'비어있는 데이터가 존재합니다. 확인후 요청해주세요.'});
+                return;
+            }
+            const { projectid } = req.body;
+
+            await projectService.deleteProject({ projectid })
+                .then((pro) => {
+                    if (pro.errorMessage) {
+                        res.status(404).json({message:"유저를 찾을 수 없습니다."})
+                    }
+                    res.status(200).json(pro);
+                });
+        }catch (e){
+            console.log(e)
+        }
     });
 
-    res.staus(201).json(newProject);
-  } catch (error) {
-    next(error);
-  }
-});
-
-projectRouter.get("/projects/:id", async function (req, res, next) {
-  try {
-    const projectId = req.params.id;
-
-    const project = await ProjectService.getProject({ projectId });
-
-    if (project.errorMessage) {
-      throw new Error(project.errorMessage);
-    }
-
-    res.status(200).send(project);
-  } catch (error) {
-    next(error);
-  }
-});
-
-projectRouter.put("/projects/:id", async function (req, res, next) {
-  try {
-    const projectId = req.params.id;
-    const title = req.body.title ?? null;
-    const description = req.body.description ?? null;
-
-    const toUpdate = { title, description };
-
-    const project = await ProjectService.setProject({ projectId, toUpdate });
-
-    if (project.errorMessage) {
-      throw new Error(project.errorMessage);
-    }
-
-    res.status(200).send(project);
-  } catch (error) {
-    next(error);
-  }
-});
-
-projectRouter.delete("/projects/:id", async function (req, res, next) {
-  try {
-    const projectId = req.params.id;
-
-    const result = await ProjectService.deleteProject({ projectId });
-
-    if (result.errorMessage) {
-      throw new Error(result.errorMessage);
-    }
-
-    res.status(200).send(result);
-  } catch (error) {
-    next(error);
-  }
-});
-
-projectRouter.get("/projectlist/:user_id", async function (req, res, next) {
-  try {
-    const user_id = req.params.user_id;
-    const projectList = await ProjectService.getProjectList({ user_id });
-    res.status(200).send(projectList);
-  } catch (error) {
-    next(error);
-  }
-});
-
-export { projectRouter };
+export {projectRouter};
