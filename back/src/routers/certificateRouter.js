@@ -1,115 +1,144 @@
-import is from "@sindresorhus/is";
 import { Router } from "express";
+import { Award, User } from "../db";
+import { Certificate } from "../db/models/Certificate";
 import { tokenValidator } from "../middlewares/tokenValidator";
-import { CertificateService } from "../services/certificateService";
+import { validationParams } from "../utils/parameterValidator";
 
+import { userAuthService } from "../services/userService";
+import { certificateService } from "../services/certificateService";
+
+import { CertificateModel } from "../db/schemas/certificate";
 const certificateRouter = Router();
 certificateRouter.use(tokenValidator);
 
-certificateRouter.post("/certificate/create", async function (req, res, next) {
+/**
+ * @description
+ *      /certificate/list 로  post 요청시
+ *      특정 user의 모든 certificate 정보를
+ *      Array 로 응답합니다.
+ *
+ * @param {email: "String"}
+ */
+certificateRouter.post("/list", async function (req, res, next) {
   try {
-    if (is.emptyObject(req.body)) {
-      throw new Error(
-        "headers의 Content-Type을 application/json으로 설정해주세요"
-      );
+    const user_id = req.currentUserId;
+    const { email } = req.body;
+    if (!email) {
+      res.status(404).json({ message: "파라미터를 확인해주세요" });
     }
+    const user = User.findByEmail({ email });
 
-    // req (request) 에서 데이터 가져오기
-    const user_id = req.body.user_id;
-    const title = req.body.title;
-    const description = req.body.description;
-
-    // 위 데이터를 유저 db에 추가하기
-    const newCertificate = await CertificateService.addCertificate({
-      user_id,
-      title,
-      description,
-    });
-
-    res.status(201).json(newCertificate);
-  } catch (error) {
-    next(error);
-  }
-});
-
-certificateRouter.get("/certificates/:id", async function (req, res, next) {
-  try {
-    // req (request) 에서 id 가져오기
-    const certificateId = req.params.id;
-
-    // 위 id를 이용하여 db에서 데이터 찾기
-    const certificate = await CertificateService.getCertificate({
-      certificateId,
-    });
-
-    if (certificate.errorMessage) {
-      throw new Error(certificate.errorMessage);
-    }
-
-    res.status(200).send(certificate);
-  } catch (error) {
-    next(error);
-  }
-});
-
-certificateRouter.put("/certificates/:id", async function (req, res, next) {
-  try {
-    // URI로부터 수상 데이터 id를 추출함.
-    const certificateId = req.params.id;
-
-    // body data 로부터 업데이트할 수상 정보를 추출함.
-    const title = req.body.title ?? null;
-    const description = req.body.description ?? null;
-
-    const toUpdate = { title, description };
-
-    // 위 추출된 정보를 이용하여 db의 데이터 수정하기
-    const certificate = await CertificateService.setCertificate({
-      certificateId,
-      toUpdate,
-    });
-
-    if (certificate.errorMessage) {
-      throw new Error(certificate.errorMessage);
-    }
-
-    res.status(200).send(certificate);
-  } catch (error) {
-    next(error);
-  }
-});
-
-certificateRouter.delete("/certificates/:id", async function (req, res, next) {
-  try {
-    // req (request) 에서 id 가져오기
-    const certificateId = req.params.id;
-
-    // 위 id를 이용하여 db에서 데이터 삭제하기
-    const result = await CertificateService.deleteCertificate({
-      certificateId,
-    });
-
-    if (result.errorMessage) {
-      throw new Error(result.errorMessage);
-    }
-
-    res.status(200).send(result);
-  } catch (error) {
-    next(error);
-  }
-});
-
-certificateRouter.get(
-  "/certificatelist/:user_id",
-  async function (req, res, next) {
-    try {
-      // 특정 사용자의 전체 수상 목록을 얻음
-      // @ts-ignore
-      const user_id = req.params.user_id;
-      const certificateList = await CertificateService.getCertificateList({
-        user_id,
+    user.then((u) => {
+      if (!u) {
+        res.status(404).json({ message: "유저를 찾을수 없습니다." });
+      }
+      const finded = CertificateModel.find({ user: u._id });
+      finded.then((data) => {
+        res.send(data);
       });
-      res.status(200).send(certificateList);
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+/**
+ * @description
+ *      /certificate/create 로  post 요청시
+ *      session에 등록된 user의 certificate 정보를 등록합니다.
+ *
+ *
+ *      @param {institution, major, degree, period}
+ */
+certificateRouter.post("/create", async function (req, res, next) {
+  try {
+    const params = Object.values(req.body);
+    if (!validationParams(params)) {
+      console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
+      res.status(404).send({
+        message: "비어있는 데이터가 존재합니다. 확인후 요청해주세요.",
+      });
+      return;
+    }
+    const { userId, school, major, status } = req.body; // userId 오브젝트 아이디 아님
+    const user_id = req.currentUserId;
+
+    const user = await userAuthService.getUserInfo({ user_id });
+
+    console.log(`user Service : ${user._id}`);
+    const certificate = new CertificateModel({
+      user: user._id,
+      institution: school,
+      major: major,
+      degree: status,
+    });
+
+    const added = await certificateService.addCertificate({ certificate });
+
+    if (!added) {
+      console.log("데이터베이스 입력에 실패했습니다.");
+      res.status(404).json({ message: "데이터베이스 입력에 실패했습니다." });
+      return;
+    }
+    console.log("데이터베이스 입력에 성공했습니다.");
+    res.status(200).json({ message: "데이터베이스 입력 되었습니다." });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// certificate 수정
+certificateRouter.patch("/:id", async (req, res, next) => {
+  const { id } = req.params;
+  const { fieldToUpdate, newValue } = req.body;
+  try {
+    // Call the update method of the Certificate model
+    const updatedCertificate = await Certificate.update({
+      user_id: id,
+      fieldToUpdate,
+      newValue,
+    });
+
+    res.status(200).json(updatedCertificate);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+    next(error);
+  }
+});
+
+/*
+ * @description
+ *      /certificate/update 로 Post 요청시
+ *      userid,school,major,status
+ *      를 DB에 업데이트합니다.
+ *
+ *      @params
+ *      {userId,school, major, status}
+ */
+
+certificateRouter.post("/update", async (req, res, next) => {
+  const params = Object.values(req.body);
+
+  const { userId, school, major, status } = req.body;
+  const user_id = req.currentUserId;
+
+  const user = userAuthService.getUserInfo({ user_id });
+  const toUpdate = { school, major, status };
+  console.log(user._id);
+});
+
+certificateRouter.delete(
+  "/:_id",
+  tokenValidator,
+  async function (req, res, next) {
+    const certificateId = req.params._id;
+    try {
+      const result = await certificateService.deleteCertificate({ certificateId });
+      if (result.errorMessage) {
+        throw new Error(result.errorMessage);
+      }
+      res.status(200).send(result);
     } catch (error) {
       next(error);
     }
