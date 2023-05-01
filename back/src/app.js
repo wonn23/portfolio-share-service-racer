@@ -31,8 +31,8 @@ app.use("/education", educationRouter);
 app.get("/award");
 app.use("/award", awardRouter);
 
-// app.get("/certificate")
-// app.use("/certificate", cerificateRouter);
+app.get("/certificate")
+app.use("/certificate", cerificateRouter);
 //
 // app.get("/project")
 // app.use("/project", projectRouter);

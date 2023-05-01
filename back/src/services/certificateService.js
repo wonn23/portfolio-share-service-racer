@@ -1,40 +1,66 @@
+// from을 폴더(db) 로 설정 시, 디폴트로 index.js 로부터 import함.
 import { Certificate } from "../db";
 import { v4 as uuidv4 } from "uuid";
 
-class certificateService {
-  static async addCertificate({ certificate }) {
-    return await Certificate.addCertificate({ certificate });
+class CertificateService {
+  static async addCertificate({ newCertificate }) {
+    return Certificate.addCertificate({ newCertificate });
   }
 
-  static async getCertificate({ userId }) {
-    const certificate = await Certificate.findAll({ userId });
+  static async getCertificate({ certificateId }) {
+    // 해당 id를 가진 데이터가 db에 존재 여부 확인
+    const certificate = await Certificate.findById({ certificateId });
     if (!certificate) {
       const errorMessage =
-        "해당 자격증 데이터는 없습니다. 다시 한 번 확인해 주세요.";
+        "해당 id를 가진 수상 데이터는 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
+
     return certificate;
   }
 
-  static async editCertificate({ certificate }) {
-    const editedCertificate = await Certificate.edit({ certificate });
-    if (!editedCertificate) {
+  static async getCertificateList({ user_id }) {
+    const certificates = await Certificate.findByUserId({ user_id });
+    return certificates;
+  }
+
+  static async setCertificate({ certificateId, toUpdate }) {
+    let certificate = await Certificate.findById({ certificateId });
+
+    // db에서 찾지 못한 경우, 에러 메시지 반환
+    if (!certificate) {
       const errorMessage =
-        "해당 자격증 데이터는 없습니다. 다시 한 번 확인해 주세요.";
+        "해당 id를 가진 수상 데이터는 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-    return editedCertificate;
+
+    if (toUpdate.title) {
+      const fieldToUpdate = "title";
+      const newValue = toUpdate.title;
+      certificate = await Certificate.update({ certificateId, fieldToUpdate, newValue });
+    }
+
+    if (toUpdate.description) {
+      const fieldToUpdate = "description";
+      const newValue = toUpdate.description;
+      certificate = await Certificate.update({ certificateId, fieldToUpdate, newValue });
+    }
+
+    return certificate;
   }
 
   static async deleteCertificate({ certificateId }) {
-    const deletedCertificate = await Certificate.deleteById({ certificateId });
-    if (!deletedCertificate) {
+    const isDataDeleted = await Certificate.deleteById({ certificateId });
+
+    // db에서 찾지 못한 경우, 에러 메시지 반환
+    if (!isDataDeleted) {
       const errorMessage =
-        "해당 자격증 정보가 없습니다. 다시 한 번 확인해 주세요.";
+        "해당 id를 가진 수상 데이터는 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-    return deletedCertificate;
+
+    return { status: "ok" };
   }
 }
 
-export { certificateService };
+export { CertificateService };
