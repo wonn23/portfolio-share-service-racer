@@ -1,6 +1,11 @@
 import { AwardModel } from "../schemas/award";
 
 class Award {
+  static async addAward({ newAward }) {
+    const createdAward = await AwardModel.create(newAward);
+    return createdAward;
+  }
+
   static async create({ newAward }) {
     const createdNewAward = await AwardModel.create(newAward);
     return createdNewAward;
@@ -16,23 +21,22 @@ class Award {
     return awards;
   }
 
-  static async update({ awardId, fieldToUpdate, newValue }) {
-    const filter = { id: awardId };
+  static async update({ user_id, fieldToUpdate, newValue }) {
+    const filter = { _id: user_id };
     const update = { [fieldToUpdate]: newValue };
     const option = { returnOriginal: false };
 
-    const updatedAward = await AwardModel.findOneAndUpdate(
-        filter,
-        update,
-        option
+    const updatedUser = await AwardModel.findOneAndUpdate(
+      filter,
+      update,
+      option
     );
-    return updatedAward;
+    return updatedUser;
   }
 
   static async deleteById({ awardId }) {
-    const deleteResult = await AwardModel.deleteOne({ id: awardId });
-    const isDataDeleted = deleteResult.deletedCount === 1;
-    return isDataDeleted;
+    const deletedAward = await AwardModel.findByIdAndDelete(awardId);
+    return deletedAward;
   }
 }
 
