@@ -115,8 +115,8 @@ certificateRouter.post("/update", async function (req, res, next) {
     const certificate = Certificate.findById({ user_id });
     certificate.then((certificate) => {
       if (!certificate) {
-        console.log("일치하는 수상이력이 없습니다.");
-        res.status(404).send({ message: "일치하는 수상이력이 없습니다." });
+        console.log("일치하는 자격증 이력이 없습니다.");
+        res.status(404).send({ message: "일치하는 자격증 이력이 없습니다." });
         return;
       }
       const certificate_id = certificate._id;
