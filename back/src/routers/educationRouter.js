@@ -1,32 +1,65 @@
-import { Router } from "express";
-import { Award, User } from "../db";
-import { Education } from "../db/models/Education";
 import { tokenValidator } from "../middlewares/tokenValidator";
-import { validationParams } from "../utils/parameterValidator";
+import { Router } from "express";
+import {validationParams} from "../utils/parameterValidator";
+import {v4 as uuidv4} from "uuid";
 
-import { userAuthService } from "../services/userService";
-import { educationService } from "../services/educationService";
-import { EducationModel } from "../db/schemas/education";
+import {User} from "../db";
+import {EducationModel} from "../db/schemas/education";
+import {userAuthService} from "../services/userService";
+import {educationService} from "../services/educationService";
 
 const educationRouter = Router();
 educationRouter.use(tokenValidator);
 
-/**
- * @description
- *      /education/list 로  post 요청시
- *      특정 user의 모든 education 정보를
- *      Array 로 응답합니다.
- *
- * @param {email: "String"}
- */
+
+
+educationRouter.post("/add", async function (req, res, next) {
+  try {
+    const params = Object.values(req.body);
+    if(!validationParams(params))
+    {
+      console.log('비어있는 데이터가 존재합니다. 확인후 요청해주세요.');
+      res.status(404).send({message:'비어있는 데이터가 존재합니다. 확인후 요청해주세요.'});
+      return;
+    }
+    const {school, major, status} = req.body;
+
+    const user_id = req.currentUserId;
+    const user = await userAuthService.getUserInfo({user_id});
+
+    const eduId = uuidv4();
+
+    console.log(`user Service : ${user._id}`);
+    const education =
+        new EducationModel({
+          user: user._id,
+          educationId:eduId,
+          school:school,
+          major:major,
+          status:status
+        });
+
+    const added = await educationService.addEducation({education});
+
+    if(!added){
+      console.log('데이터베이스 입력에 실패했습니다.');
+      res.status(404).json({message: '데이터베이스 입력에 실패했습니다.'});
+      return;
+    }
+    console.log('데이터베이스 입력에 성공했습니다.');
+    res.status(200).json({message:'데이터베이스 입력 되었습니다.'});
+
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+
 educationRouter.post("/list", async function (req, res, next) {
   try {
     const user_id = req.currentUserId;
-    const { email } = req.body;
-    if (!email) {
-      res.status(404).json({ message: "파라미터를 확인해주세요" });
-    }
-    const user = User.findByEmail({ email });
+    const user = User.findById({ user_id });
 
     user.then((u) => {
       if (!u) {
@@ -42,139 +75,47 @@ educationRouter.post("/list", async function (req, res, next) {
   }
 });
 
-/**
- * @description
- *      /education/create 로  post 요청시
- *      session에 등록된 user의 education 정보를 등록합니다.
- *
- *
- *      @param {institution, major, degree}
- */
-educationRouter.post("/create", async function (req, res, next) {
-  try {
+
+educationRouter.post("/update", async (req, res, next) => {
+  try{
+    const {educationId,school, major, status } = req.body;
+    const toUpdate = { school, major, status };
+
+    await educationService.setEducation({ educationId, toUpdate })
+        .then((edu) => {
+          if (edu.errorMessage) {
+            res.status(404).json({message:"해당 정보를 찾을 수 없습니다."})
+          }
+          res.status(200).json(edu);
+        });
+  }catch (e){
+    console.log(e);
+    res.status(404).json({message:"해당 정보를 찾을 수 없습니다."});
+  }
+});
+
+educationRouter.post("/delete", async (req, res, next) => {
+  try{
     const params = Object.values(req.body);
-    if (!validationParams(params)) {
-      console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
-      res.status(404).send({
-        message: "비어있는 데이터가 존재합니다. 확인후 요청해주세요.",
-      });
+    if(!validationParams(params))
+    {
+      console.log('비어있는 데이터가 존재합니다. 확인후 요청해주세요.');
+      res.status(404).send({message:'비어있는 데이터가 존재합니다. 확인후 요청해주세요.'});
       return;
     }
-    const { userId, school, major, status } = req.body; // userId 오브젝트 아이디 아님
-    const user_id = req.currentUserId;
+    const { educationId } = req.body;
 
-    const user = await userAuthService.getUserInfo({ user_id });
-
-    console.log(`user Service : ${user._id}`);
-    const education = new EducationModel({
-      user: user._id,
-      institution: school,
-      major: major,
-      degree: status,
-    });
-
-    const added = await educationService.addEducation({ education });
-
-    if (!added) {
-      console.log("데이터베이스 입력에 실패했습니다.");
-      res.status(404).json({ message: "데이터베이스 입력에 실패했습니다." });
-      return;
-    }
-    console.log("데이터베이스 입력에 성공했습니다.");
-    res.status(200).json({ message: "데이터베이스 입력 되었습니다." });
-  } catch (error) {
-    next(error);
+    await educationService.deleteEducation({ educationId })
+        .then((edu) => {
+          if (edu.errorMessage) {
+            res.status(404).json({message:"유저를 찾을 수 없습니다."})
+          }
+          res.status(200).json(edu);
+        });
+  }catch (e){
+    console.log(e);
   }
 });
 
-// education 수정
-educationRouter.patch("/:_id", async (req, res, next) => {
-  const { _id } = req.params;
-  const { fieldToUpdate, newValue } = req.body;
-  try {
-    // Call the update method of the Education model
-    const updatedEducation = await Education.update({
-      user_id: _id,
-      fieldToUpdate,
-      newValue,
-    });
-
-    res.status(200).json(updatedEducation);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-    next(error);
-  }
-});
-
-/*
- * @description
- *      /education/update 로 Post 요청시
- *      userid,school,major,status
- *      를 DB에 업데이트합니다.
- *
- *      @params
- *      {userId,school, major, status}
- */
-
-educationRouter.post("/update", async function (req, res, next) {
-  try {
-    const params = Object.values(req.body);
-
-    if (!validationParams(params)) {
-      console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
-      res.status(404).send({
-        message: "비어있는 데이터가 존재합니다. 확인후 요청해주세요.",
-      });
-      return;
-    }
-
-    const { id, school, major, status } = req.body;
-
-    const user_id = req.currentUserId;
-
-    const education = Education.findById({ user_id });
-    education.then((education) => {
-      if (!education) {
-        console.log("일치하는 수상이력이 없습니다.");
-        res.status(404).send({ message: "일치하는 수상이력이 없습니다." });
-        return;
-      }
-      const education_id = education._id;
-      const toUpdate = new AwardModel(
-        { education_id },
-        { institution: school, major: major, degree: status }
-      );
-
-      const updated = toUpdate.updateOne();
-      if (!updated) {
-        console.log("업데이트 되었습니다.");
-        res.status(404).json({ message: "업데이트 되었습니다." });
-        return;
-      }
-      console.log("업데이트 되었습니다.");
-      res.status(200).json(updated);
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-educationRouter.delete(
-  "/:_id",
-  tokenValidator,
-  async function (req, res, next) {
-    const educationId = req.params._id;
-    try {
-      const result = await educationService.deleteEducation({ educationId });
-      if (result.errorMessage) {
-        throw new Error(result.errorMessage);
-      }
-      res.status(200).send(result);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
 
 export { educationRouter };
