@@ -2,7 +2,7 @@ import cors from "cors";
 import express from "express";
 
 import { awardRouter } from "./routers/awardRouter";
-// import { cerificateRouter } from "./routers/certificateRouter";
+import { cerificateRouter } from "./routers/certificateRouter";
 import { educationRouter } from "./routers/educationRouter";
 import { projectRouter } from "./routers/projectRouter";
 import { userAuthRouter } from "./routers/userRouter";
