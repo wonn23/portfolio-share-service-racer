@@ -35,7 +35,7 @@ app.use("/award", awardRouter);
 // app.use("/certificate", cerificateRouter);
 //
 // app.get("/project")
-// app.use("/certificate", projectRouter);
+// app.use("/project", projectRouter);
 
 app.use(errorHandler);
 

@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { tokenValidator } from "../middlewares/tokenValidator";
 import { User, Award } from "../db";
+import { tokenValidator } from "../middlewares/tokenValidator";
+import { validationParams } from "../utils/parameterValidator";
+
+import { userAuthService } from "../services/userService";
 import { AwardService } from "../services/awardService";
 import { AwardModel } from "../db/schemas/award";
-import { validationParams } from "../utils/parameterValidator";
 
 const awardRouter = Router();
 awardRouter.use(tokenValidator);
@@ -19,9 +21,68 @@ awardRouter.use(tokenValidator);
  */
 awardRouter.post("/create", async function (req, res, next) {
   try {
+    const params = Object.values(req.body);
+    if (!validationParams(params)) {
+      console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
+      res.status(404).send({
+        message: "비어있는 데이터가 존재합니다. 확인후 요청해주세요.",
+      });
+      return;
+    }
+    const { userId, title, description } = req.body; // userId 오브젝트 아이디 아님
+    const user_id = req.currentUserId;
 
+    const user = await userAuthService.getUserInfo({ user_id });
+
+    console.log(`user Service : ${user._id}`);
+    const newAward = new AwardModel({
+      user: user._id,
+      title: title,
+      description: description,
+    });
+
+    const added = await AwardService.addAward({ newAward });
+
+    if (!added) {
+      console.log("데이터베이스 입력에 실패했습니다.");
+      res.status(404).json({ message: "데이터베이스 입력에 실패했습니다." });
+      return;
+    }
+    console.log("데이터베이스 입력에 성공했습니다.");
+    res.status(200).json({ message: "데이터베이스 입력 되었습니다." });
   } catch (error) {
     next(error);
+  }
+});
+
+/**
+ * @description
+ *      /education/list 로  post 요청시
+ *      특정 user의 모든 education 정보를
+ *      Array 로 응답합니다.
+ *
+ * @param {email: "String"}
+ */
+awardRouter.post("/list", async function (req, res, next) {
+  try {
+    const user_id = req.currentUserId;
+    const { email } = req.body;
+    if (!email) {
+      res.status(404).json({ message: "파라미터를 확인해주세요" });
+    }
+    const user = User.findByEmail({ email });
+
+    user.then((u) => {
+      if (!u) {
+        res.status(404).json({ message: "유저를 찾을수 없습니다." });
+      }
+      const finded = AwardModel.find({ user: u._id });
+      finded.then((data) => {
+        res.send(data);
+      });
+    });
+  } catch (e) {
+    next(e);
   }
 });
 
@@ -78,55 +139,34 @@ awardRouter.post("/update", async function (req, res, next) {
   }
 });
 
-awardRouter.put("/awards/:id", async function (req, res, next) {
+// award 수정
+awardRouter.patch("/:id", async (req, res, next) => {
+  const { id } = req.params;
+  const { fieldToUpdate, newValue } = req.body;
   try {
-    // URI로부터 수상 데이터 id를 추출함.
-    const awardId = req.params.id;
+    // Call the update method of the Education model
+    const updatedAward = await Award.update({
+      user_id: id,
+      fieldToUpdate,
+      newValue,
+    });
 
-    // body data 로부터 업데이트할 수상 정보를 추출함.
-    const title = req.body.title ?? null;
-    const description = req.body.description ?? null;
-
-    const toUpdate = { title, description };
-
-    // 위 추출된 정보를 이용하여 db의 데이터 수정하기
-    const award = await AwardService.setAward({ awardId, toUpdate });
-
-    if (award.errorMessage) {
-      throw new Error(award.errorMessage);
-    }
-
-    res.status(200).send(award);
+    res.status(200).json(updatedAward);
   } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
     next(error);
   }
 });
 
-awardRouter.delete("/awards/:id", async function (req, res, next) {
+awardRouter.delete("/:_id", tokenValidator, async function (req, res, next) {
+  const awardId = req.params._id;
   try {
-    // req (request) 에서 id 가져오기
-    const awardId = req.params.id;
-
-    // 위 id를 이용하여 db에서 데이터 삭제하기
     const result = await AwardService.deleteAward({ awardId });
-
     if (result.errorMessage) {
       throw new Error(result.errorMessage);
     }
-
     res.status(200).send(result);
-  } catch (error) {
-    next(error);
-  }
-});
-
-awardRouter.get("/awardlist/:userId", async function (req, res, next) {
-  try {
-    // 특정 사용자의 전체 수상 목록을 얻음
-    // @ts-ignore
-    const userId = req.params.userId;
-    const awardList = await AwardService.getAwardList({ userId });
-    res.status(200).send(awardList);
   } catch (error) {
     next(error);
   }

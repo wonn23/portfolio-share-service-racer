@@ -2,7 +2,7 @@ import { EducationModel } from "../schemas/education";
 
 class Education {
   // education 생성
-  static async addEducation({education}) {
+  static async addEducation({ education }) {
     const createdEducation = await EducationModel.create(education);
     return createdEducation;
   }
@@ -55,7 +55,9 @@ class Education {
   }
   // education 삭제
   static async deleteById({ educationId }) {
-    const deletedEducation = await EducationModel.findByIdAndDelete(educationId);
+    const deletedEducation = await EducationModel.findByIdAndDelete(
+      educationId
+    );
     return deletedEducation;
   }
 }
