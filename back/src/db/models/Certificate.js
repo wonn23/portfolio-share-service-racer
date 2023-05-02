@@ -2,23 +2,19 @@ import { CertificateModel } from "../schemas/certificate";
 
 class Certificate {
   static async addCertificate({ newCertificate }) {
-    const createdCertificate = await CertificateModel.create(newCertificate);
-    return createdCertificate;
+    return await CertificateModel.create(newCertificate);
   }
 
   static async create({ newCertificate }) {
-    const createdNewCertificate = await CertificateModel.create(newCertificate);
-    return createdNewCertificate;
+    return await CertificateModel.create(newCertificate);
   }
 
   static async findById({ certificateId }) {
-    const certificate = await CertificateModel.findOne({ id: certificateId });
-    return certificate;
+    return await CertificateModel.findOne({ id: certificateId });
   }
 
   static async findByUserId({ userId }) {
-    const certificates = await CertificateModel.find({ userId });
-    return certificates;
+    return await CertificateModel.find({ userId });
   }
 
   static async update({ user_id, fieldToUpdate, newValue }) {
@@ -35,8 +31,7 @@ class Certificate {
   }
 
   static async deleteById({ certificateId }) {
-    const deletedCertificate = await CertificateModel.findByIdAndDelete(certificateId);
-    return deletedCertificate;
+    return await CertificateModel.findByIdAndDelete(certificateId);
   }
 }
 
