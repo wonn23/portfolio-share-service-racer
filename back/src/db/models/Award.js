@@ -9,14 +9,18 @@ class Award {
     return await AwardModel.create(newAward);
   }
 
-  static async findById({ awardId }) {
-    return await AwardModel.findOne({ id: awardId });
+  static async findById({ user }) {
+    return await AwardModel.findOne({ id: user });
   }
 
   static async findByUserId({ userId }) {
     return await AwardModel.find({ userId });
   }
-
+  static async findByIdAndUpdate({ id, update }) {
+    return await AwardModel.findOneAndUpdate({ _id: id }, update, {
+      new: true,
+    });
+  }
   static async update({ user_id, fieldToUpdate, newValue }) {
     const filter = { _id: user_id };
     const update = { [fieldToUpdate]: newValue };

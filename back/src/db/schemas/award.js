@@ -2,7 +2,7 @@ import mongoose, { Schema, model } from "mongoose";
 
 const Award = new Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,

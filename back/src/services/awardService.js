@@ -1,6 +1,5 @@
 // from을 폴더(db) 로 설정 시, 디폴트로 index.js 로부터 import함.
 import { Award } from "../db";
-import { v4 as uuidv4 } from "uuid";
 
 class AwardService {
   static async addAward({ newAward }) {
@@ -23,8 +22,8 @@ class AwardService {
     return await Award.findByUserId({ user_id });
   }
 
-  static async setAward({ awardId, toUpdate }) {
-    let award = await Award.findById({ awardId });
+  static async setAward({ award_id, toUpdate }) {
+    let award = await Award.findById(award_id);
 
     // db에서 찾지 못한 경우, 에러 메시지 반환
     if (!award) {
@@ -33,19 +32,41 @@ class AwardService {
       return { errorMessage };
     }
 
-    if (toUpdate.title) {
-      const fieldToUpdate = "title";
-      const newValue = toUpdate.title;
-      award = await Award.update({ awardId, fieldToUpdate, newValue });
-    }
+    const fieldsToUpdate = {
+      title: "title",
+      description: "description",
+    };
 
-    if (toUpdate.description) {
-      const fieldToUpdate = "description";
-      const newValue = toUpdate.description;
-      award = await Award.update({ awardId, fieldToUpdate, newValue });
+    for (const [field, fieldToUpdate] of Object.entries(fieldsToUpdate)) {
+      if (toUpdate[field]) {
+        const newValue = toUpdate[field];
+        award = await Award.update({
+          award_id,
+          fieldToUpdate,
+          newValue,
+        });
+      }
     }
 
     return award;
+  }
+
+  static async updateAward({ _id, userId, toUpdate }) {
+    const award = await Award.findById({ _id });
+    if (!award) {
+      return { errorMessage: "Award not found." };
+    }
+
+    if (award.user && award.user._id.toString() !== userId) {
+      return { errorMessage: "User is not authorized to edit this award." };
+    }
+
+    const updateObj = { userId, ...toUpdate };
+
+    await Award.findByIdAndUpdate({ _id }, updateObj);
+
+    const updatedAward = await Award.findById({ _id });
+    return updatedAward;
   }
 
   static async deleteAward({ awardId }) {

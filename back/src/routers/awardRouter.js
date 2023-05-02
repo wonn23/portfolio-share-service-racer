@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { User, Award } from "../db";
+import { User } from "../db";
 import { tokenValidator } from "../middlewares/tokenValidator";
 import { validationParams } from "../utils/parameterValidator";
 
@@ -96,65 +96,32 @@ awardRouter.post("/list", async function (req, res, next) {
  *      {id,title,description}
  */
 
-awardRouter.post("/update", async function (req, res, next) {
+// award 수정
+awardRouter.patch("/:_id", async function (req, res, next) {
   try {
-    const params = Object.values(req.body);
+    const { _id } = req.params;
+    // body data 로부터 업데이트할 사용자 정보를 추출함.
+    const { userId, title, description } = req.body ?? null;
 
-    if (!validationParams(params)) {
-      console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
-      res.status(404).send({
-        message: "비어있는 데이터가 존재합니다. 확인후 요청해주세요.",
-      });
-      return;
+    if (!userId) {
+      throw new Error("해당 유저 아이디가 없습니다. 다시 확인해 주세요.");
     }
 
-    const { id, title, description } = req.body;
+    const toUpdate = { title, description };
 
-    const user_id = req.currentUserId;
-
-    const award = Award.findById({ user_id });
-    award.then((award) => {
-      if (!award) {
-        console.log("일치하는 수상이력이 없습니다.");
-        res.status(404).send({ message: "일치하는 수상이력이 없습니다." });
-        return;
-      }
-      const award_id = award._id;
-      const toUpdate = new AwardModel(
-        { award_id },
-        { title: title, description: description }
-      );
-
-      const updated = toUpdate.updateOne();
-      if (!updated) {
-        console.log("업데이트 되었습니다.");
-        res.status(404).json({ message: "업데이트 되었습니다." });
-        return;
-      }
-      console.log("업데이트 되었습니다.");
-      res.status(200).json(updated);
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// award 수정
-awardRouter.patch("/:id", async (req, res, next) => {
-  const { id } = req.params;
-  const { fieldToUpdate, newValue } = req.body;
-  try {
-    // Call the update method of the Education model
-    const updatedAward = await Award.update({
-      user_id: id,
-      fieldToUpdate,
-      newValue,
+    // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
+    const updateAward = await AwardService.updateAward({
+      _id,
+      userId,
+      toUpdate,
     });
 
-    res.status(200).json(updatedAward);
+    if (updateAward.errorMessage) {
+      throw new Error(updateAward.errorMessage);
+    }
+
+    res.status(200).json(updateAward);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
     next(error);
   }
 });

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Award, User } from "../db";
+import { User } from "../db";
 import { Education } from "../db/models/Education";
 import { tokenValidator } from "../middlewares/tokenValidator";
 import { validationParams } from "../utils/parameterValidator";
