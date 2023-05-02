@@ -2,23 +2,19 @@ import { AwardModel } from "../schemas/award";
 
 class Award {
   static async addAward({ newAward }) {
-    const createdAward = await AwardModel.create(newAward);
-    return createdAward;
+    return AwardModel.create(newAward);
   }
 
   static async create({ newAward }) {
-    const createdNewAward = await AwardModel.create(newAward);
-    return createdNewAward;
+    return await AwardModel.create(newAward);
   }
 
   static async findById({ awardId }) {
-    const award = await AwardModel.findOne({ id: awardId });
-    return award;
+    return await AwardModel.findOne({ id: awardId });
   }
 
   static async findByUserId({ userId }) {
-    const awards = await AwardModel.find({ userId });
-    return awards;
+    return await AwardModel.find({ userId });
   }
 
   static async update({ user_id, fieldToUpdate, newValue }) {
@@ -35,8 +31,7 @@ class Award {
   }
 
   static async deleteById({ awardId }) {
-    const deletedAward = await AwardModel.findByIdAndDelete(awardId);
-    return deletedAward;
+    return await AwardModel.findByIdAndDelete(awardId);
   }
 }
 

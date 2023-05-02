@@ -2,23 +2,19 @@ import { UserModel } from "../schemas/user";
 
 class User {
   static async create({ newUser }) {
-    const createdNewUser = await UserModel.create(newUser);
-    return createdNewUser;
+    return await UserModel.create(newUser);
   }
 
   static async findByEmail({ email }) {
-    const user = await UserModel.findOne({ email });
-    return user;
+    return await UserModel.findOne({ email });
   }
 
   static async findById({ user_id }) {
-    const user = await UserModel.findOne({ id: user_id });
-    return user;
+    return await UserModel.findOne({ id: user_id });
   }
 
   static async findAll() {
-    const users = await UserModel.find({});
-    return users;
+    return await UserModel.find({});
   }
 
   static async update({ user_id, fieldToUpdate, newValue }) {

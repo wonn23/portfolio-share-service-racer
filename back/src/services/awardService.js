@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 class AwardService {
   static async addAward({ newAward }) {
-    return Award.addAward({ newAward });
+    return await Award.addAward({ newAward });
   }
 
   static async getAward({ awardId }) {
@@ -20,8 +20,7 @@ class AwardService {
   }
 
   static async getAwardList({ user_id }) {
-    const awards = await Award.findByUserId({ user_id });
-    return awards;
+    return await Award.findByUserId({ user_id });
   }
 
   static async setAward({ awardId, toUpdate }) {
