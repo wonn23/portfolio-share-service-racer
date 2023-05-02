@@ -116,10 +116,6 @@ awardRouter.patch("/:_id", async function (req, res, next) {
       toUpdate,
     });
 
-    if (updateAward.errorMessage) {
-      throw new Error(updateAward.errorMessage);
-    }
-
     res.status(200).json(updateAward);
   } catch (error) {
     next(error);

@@ -16,8 +16,9 @@ class Award {
   static async findByUserId({ userId }) {
     return await AwardModel.find({ userId });
   }
-  static async findByIdAndUpdate({ id, update }) {
-    return await AwardModel.findOneAndUpdate({ _id: id }, update, {
+
+  static async findByIdAndUpdate({ _id }, update) {
+    return await AwardModel.findOneAndUpdate({ _id }, update, {
       new: true,
     });
   }
