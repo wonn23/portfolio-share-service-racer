@@ -8,7 +8,7 @@ class awardService {
 
   static async getAward({ userId }) {
     // 해당 id를 가진 데이터가 db에 존재 여부 확인
-    const award = await Award.findById({ userId });
+    const award = await Award.findByUserId({ userId });
     if (!award) {
       const errorMessage =
         "해당 id를 가진 수상 데이터는 없습니다. 다시 한 번 확인해 주세요.";
@@ -18,7 +18,7 @@ class awardService {
   }
 
   static async updateAward({ _id, userId, toUpdate }) {
-    const award = await Award.findById({ _id });
+    const award = await Award.findById({ userId });
 
     if (!award) {
       return { errorMessage: "Award not found." };
