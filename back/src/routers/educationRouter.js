@@ -14,6 +14,14 @@ import { educationService } from "../services/educationService";
 const educationRouter = Router();
 educationRouter.use(tokenValidator);
 
+/**
+ * @description
+ *      /education/create 로  post 요청시
+ *      session에 등록된 user의 education 정보를 등록합니다.
+ *
+ *
+ *      @param {school, major, status}
+ */
 educationRouter.post("/create", async function (req, res, next) {
   try {
     const params = Object.values(req.body);
@@ -24,7 +32,7 @@ educationRouter.post("/create", async function (req, res, next) {
       });
       return;
     }
-    const { userId, school, major, status } = req.body; // userId 오브젝트 아이디 아님
+    const { school, major, status } = req.body;
     const user_id = req.currentUserId;
 
     const user = await userAuthService.getUserInfo({ user_id });
@@ -32,12 +40,12 @@ educationRouter.post("/create", async function (req, res, next) {
     console.log(`user Service : ${user._id}`);
     const education = new EducationModel({
       user: user._id,
-      institution: school,
+      school: school,
       major: major,
-      degree: status,
+      status: status,
     });
 
-    const added = await educationService.addEducation({ education });
+    const added = await educationService.createEducation({ education });
 
     if (!added) {
       console.log("데이터베이스 입력에 실패했습니다.");
@@ -110,21 +118,36 @@ educationRouter.post("/list", async function (req, res, next) {
   }
 });
 
-educationRouter.patch("/:_id", async (req, res, next) => {
-  const { _id } = req.params;
-  const { fieldToUpdate, newValue } = req.body;
+/*
+ * @description
+ *      /education/update 로 Post 요청시
+ *      userid,school,major,status
+ *      를 DB에 업데이트합니다.
+ *
+ *      @params
+ *      {userId,school, major, status}
+ */
+educationRouter.patch("/:_id", async function (req, res, next) {
   try {
-    // Call the update method of the Education model
-    const updatedEducation = await Education.update({
-      user_id: _id,
-      fieldToUpdate,
-      newValue,
+    const { _id } = req.params;
+    // body data 로부터 업데이트할 사용자 정보를 추출함.
+    const { user, school, major, status } = req.body ?? null;
+
+    if (!user) {
+      throw new Error("해당 유저 아이디가 없습니다. 다시 확인해 주세요.");
+    }
+
+    const toUpdate = { school, major, status };
+
+    // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
+    const updateAward = await educationService.updateEducation({
+      _id,
+      user,
+      toUpdate,
     });
 
-    res.status(200).json(updatedEducation);
+    res.status(200).json(updateAward);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
     next(error);
   }
 });
