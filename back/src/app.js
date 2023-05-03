@@ -8,7 +8,7 @@ import { projectRouter } from "./routers/projectRouter";
 import { userAuthRouter } from "./routers/userRouter";
 
 import { errorHandler } from "./middlewares/errorHandler";
-import { tokenValidator } from "./middlewares/tokenValidator";
+
 const app = express();
 
 app.use(cors());

@@ -1,9 +1,14 @@
 import mongoose, { Schema, model } from "mongoose";
+
 const EducationSchema = new Schema(
   {
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    educationId: {
+      type: String,
       required: true,
     },
     school: {
