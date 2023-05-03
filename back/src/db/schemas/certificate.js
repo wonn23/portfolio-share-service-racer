@@ -7,11 +7,19 @@ const CertificateSchema = new Schema(
       ref: "User",
       required: true,
     },
+    institution: {
+      type: String,
+      required: true,
+    },
     title: {
       type: String,
       required: true,
     },
-    description: {
+    grade: {
+      type: String,
+      required: true,
+    },
+    issueDate: {
       type: String,
       required: true,
     },
