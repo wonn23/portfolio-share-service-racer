@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Award, User } from "../db";
+import { Education, User } from "../db";
 import { Education } from "../db/models/Education";
 import { tokenValidator } from "../middlewares/tokenValidator";
 import { Router } from "express";
@@ -140,13 +140,13 @@ educationRouter.patch("/:_id", async function (req, res, next) {
     const toUpdate = { school, major, status };
 
     // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
-    const updateAward = await educationService.updateEducation({
+    const updateEducation = await educationService.updateEducation({
       _id,
       user,
       toUpdate,
     });
 
-    res.status(200).json(updateAward);
+    res.status(200).json(updateEducation);
   } catch (error) {
     next(error);
   }
@@ -170,5 +170,3 @@ educationRouter.delete(
 );
 
 export { educationRouter };
-
-
