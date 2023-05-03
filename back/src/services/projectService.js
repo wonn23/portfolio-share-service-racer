@@ -1,8 +1,8 @@
 import { Project } from "../db";
 
 class projectService {
-  static async addProject({ project }) {
-    return await Project.addProject({ project });
+  static async createProject({ newProject }) {
+    return await Project.createProject({ newProject });
   }
   static async getProject({ userId }) {
     const project = await Project.findAll({ userId });
@@ -13,50 +13,32 @@ class projectService {
     return project;
   }
 
-  static async setProject({ projectid, toUpdate }) {
-    let project;
+  static async updateProject({ _id, userId, toUpdate }) {
+    const project = await Project.findById({ _id });
 
-    if (toUpdate.title) {
-      const fieldToUpdate = "title";
-      const newValue = toUpdate.title;
-      project = await Project.update({ projectid, fieldToUpdate, newValue });
+    if (!project) {
+      return { errorMessage: "Project not found." };
     }
-    if (toUpdate.description) {
-      const fieldToUpdate = "description";
-      const newValue = toUpdate.description;
-      project = await Project.update({ projectid, fieldToUpdate, newValue });
+
+    if (project.user && project.user._id.toString() !== userId) {
+      return { errorMessage: "User is not authorized to edit this project." };
     }
-    if (toUpdate.role) {
-      const fieldToUpdate = "role";
-      const newValue = toUpdate.role;
-      project = await Project.update({ projectid, fieldToUpdate, newValue });
-    }
-    if (toUpdate.detail) {
-      const fieldToUpdate = "detail";
-      const newValue = toUpdate.detail;
-      project = await Project.update({ projectid, fieldToUpdate, newValue });
-    }
-    if (toUpdate.url) {
-      const fieldToUpdate = "url";
-      const newValue = toUpdate.url;
-      project = await Project.update({ projectid, fieldToUpdate, newValue });
-    }
-    if (toUpdate.projectdate) {
-      const fieldToUpdate = "projectdate";
-      const newValue = toUpdate.projectdate;
-      project = await Project.update({ projectid, fieldToUpdate, newValue });
-    }
-    return project;
+
+    const updateObj = { userId, ...toUpdate };
+
+    const updatedProject = await Project.findByIdAndUpdate({ _id }, updateObj);
+
+    return updatedProject;
   }
 
-  static async deleteProject({ projectId }) {
-    const deletedProject = await Project.deleteById({ projectId });
+  static async deleteProject({ _id }) {
+    const deletedProject = await Project.deleteById({ _id });
     if (!deletedProject) {
       const errorMessage =
         "해당 학력 정보가 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-    return deletedProject;
+    return { status: "ok", _id };
   }
 }
 

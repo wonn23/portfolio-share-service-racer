@@ -5,12 +5,8 @@ class Award {
     return AwardModel.create(newAward);
   }
 
-  static async create({ newAward }) {
-    return AwardModel.create(newAward);
-  }
-
-  static async findById({ user }) {
-    return AwardModel.findOne({ id: user });
+  static async findById({ userId }) {
+    return AwardModel.findOne({ userId: userId });
   }
 
   static async findByUserId({ userId }) {
@@ -23,8 +19,8 @@ class Award {
     });
   }
 
-  static async deleteById({ awardId }) {
-    return AwardModel.findByIdAndDelete(awardId);
+  static async deleteById({ _id }) {
+    return AwardModel.findByIdAndDelete(_id);
   }
 }
 

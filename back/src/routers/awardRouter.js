@@ -4,8 +4,8 @@ import { tokenValidator } from "../middlewares/tokenValidator";
 import { validationParams } from "../utils/parameterValidator";
 
 import { userAuthService } from "../services/userService";
-import { AwardService } from "../services/awardService";
 import { AwardModel } from "../db/schemas/award";
+import { AwardService } from "../services/awardService";
 
 const awardRouter = Router();
 awardRouter.use(tokenValidator);
@@ -29,21 +29,21 @@ awardRouter.post("/create", async function (req, res, next) {
       });
       return;
     }
-    const { userId, title, description } = req.body; // userId 오브젝트 아이디 아님
+    const { title, description } = req.body; // userId 오브젝트 아이디 아님
     const user_id = req.currentUserId;
 
     const user = await userAuthService.getUserInfo({ user_id });
 
     console.log(`user Service : ${user._id}`);
     const newAward = new AwardModel({
-      user: user._id,
+      userId: user._id,
       title: title,
       description: description,
     });
 
-    const added = await AwardService.createAward({ newAward });
+    const created = await AwardService.createAward({ newAward });
 
-    if (!added) {
+    if (!created) {
       console.log("데이터베이스 입력에 실패했습니다.");
       res.status(404).json({ message: "데이터베이스 입력에 실패했습니다." });
       return;
@@ -66,17 +66,13 @@ awardRouter.post("/create", async function (req, res, next) {
 awardRouter.post("/list", async function (req, res, next) {
   try {
     const user_id = req.currentUserId;
-    const { email } = req.body;
-    if (!email) {
-      res.status(404).json({ message: "파라미터를 확인해주세요" });
-    }
-    const user = User.findByEmail({ email });
+    const user = User.findById({ user_id });
 
     user.then((u) => {
       if (!u) {
         res.status(404).json({ message: "유저를 찾을수 없습니다." });
       }
-      const finded = AwardModel.find({ user: u._id });
+      const finded = AwardModel.find({ userId: u._id });
       finded.then((data) => {
         res.send(data);
       });
@@ -123,9 +119,9 @@ awardRouter.patch("/:_id", async function (req, res, next) {
 });
 
 awardRouter.delete("/:_id", tokenValidator, async function (req, res, next) {
-  const awardId = req.params._id;
+  const _id = req.params._id;
   try {
-    const result = await AwardService.deleteAward({ awardId });
+    const result = await AwardService.deleteAward({ _id });
     if (result.errorMessage) {
       throw new Error(result.errorMessage);
     }

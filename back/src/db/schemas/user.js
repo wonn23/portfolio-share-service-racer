@@ -23,16 +23,6 @@ const UserSchema = new Schema(
       required: false,
       default: "none",
     },
-    award: [{ type: mongoose.Types.ObjectId, required: true, ref: "Award" }],
-    certificate: [
-      { type: mongoose.Types.ObjectId, required: true, ref: "Certificate" },
-    ],
-    education: [
-      { type: mongoose.Types.ObjectId, required: true, ref: "Education" },
-    ],
-    project: [
-      { type: mongoose.Types.ObjectId, required: true, ref: "Project" },
-    ],
   },
   {
     timestamps: true,

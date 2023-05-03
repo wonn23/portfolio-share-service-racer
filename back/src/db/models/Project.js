@@ -1,35 +1,26 @@
 import { ProjectModel } from "../schemas/project";
 
 class Project {
-    static async addProject({project}) {
-        return await ProjectModel.create(project);;
-    }
+  static async createProject({ newProject }) {
+    return await ProjectModel.create(newProject);
+  }
 
-    static async findById({ project_id }) {
-        return  await ProjectModel.findOne({ user: project_id });
-    }
+  static async findById({ userId }) {
+    return await ProjectModel.findOne({ userId: userId });
+  }
 
-    static async findAll({ user_id }) {
-        return await ProjectModel.find({ user: user_id });
-    }
+  static async findByUserId({ userId }) {
+    return ProjectModel.find({ userId });
+  }
 
-    static async update({ projectId, fieldToUpdate, newValue }) {
-        const filter = { projectId: projectId };
-        const update = { [fieldToUpdate]: newValue };
-        const option = { returnOriginal: false };
+  static async findByIdAndUpdate({ _id }, update) {
+    return ProjectModel.findOneAndUpdate({ _id }, update, {
+      new: true,
+    });
+  }
 
-        const updatedUser = await ProjectModel.findOneAndUpdate(
-            filter,
-            update,
-            option
-        );
-        return updatedUser;
-    }
-
-    static async deleteById({ projectId }) {
-        return await ProjectModel.deleteOne({ id: projectId });
-    }
+  static async deleteById({ _id }) {
+    return ProjectModel.findByIdAndDelete(_id);
+  }
 }
 export { Project };
-
-

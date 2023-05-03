@@ -1,12 +1,11 @@
 import { Router } from "express";
+import { User } from "../db";
 import { tokenValidator } from "../middlewares/tokenValidator";
-import { userAuthService } from "../services/userService";
 import { validationParams } from "../utils/parameterValidator";
 
+import { userAuthService } from "../services/userService";
 import { ProjectModel } from "../db/schemas/project";
-import { v4 as uuidv4 } from "uuid";
 import { projectService } from "../services/projectService";
-import { User } from "../db";
 
 const projectRouter = Router();
 projectRouter.use(tokenValidator);
@@ -25,11 +24,10 @@ projectRouter.post("/create", async (req, res, next) => {
     const user_id = req.currentUserId;
 
     const user = await userAuthService.getUserInfo({ user_id });
-    const projectId = uuidv4();
+
     console.log(`user Service : ${user._id}`);
-    const project = new ProjectModel({
-      user: user._id,
-      projectid: projectId,
+    const newProject = new ProjectModel({
+      userId: user._id,
       title: title,
       description: description,
       role: role,
@@ -38,8 +36,8 @@ projectRouter.post("/create", async (req, res, next) => {
       url: url,
     });
 
-    const added = await projectService.addProject({ project });
-    if (!added) {
+    const created = await projectService.createProject({ newProject });
+    if (!created) {
       console.log("데이터베이스 입력에 실패했습니다.");
       res.status(404).json({ message: "데이터베이스 입력에 실패했습니다." });
       return;
@@ -60,7 +58,7 @@ projectRouter.post("/list", async (req, res, next) => {
       if (!u) {
         res.status(404).json({ message: "유저를 찾을수 없습니다." });
       }
-      const finded = ProjectModel.find({ user: u._id });
+      const finded = ProjectModel.find({ userId: u._id });
       finded.then((data) => {
         res.send(data);
       });
@@ -70,54 +68,41 @@ projectRouter.post("/list", async (req, res, next) => {
   }
 });
 
-projectRouter.post("/update", async (req, res, next) => {
+projectRouter.patch("/:_id", async function (req, res, next) {
   try {
-    const params = Object.values(req.body);
-    if (!validationParams(params)) {
-      console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
-      res.status(404).send({
-        message: "비어있는 데이터가 존재합니다. 확인후 요청해주세요.",
-      });
-      return;
+    const { _id } = req.params;
+    // body data 로부터 업데이트할 사용자 정보를 추출함.
+    const { userId, title, description } = req.body ?? null;
+
+    if (!userId) {
+      throw new Error("해당 유저 아이디가 없습니다. 다시 확인해 주세요.");
     }
-    const { projectid, title, description, role, detail, url, projectdate } =
-      req.body;
 
-    const toUpdate = { title, description, role, detail, url, projectdate };
+    const toUpdate = { title, description };
 
-    await projectService.setProject({ projectid, toUpdate }).then((pro) => {
-      if (pro.errorMessage) {
-        res.status(404).json({ message: "유저를 찾을 수 없습니다." });
-      }
-      res.status(200).json(pro);
+    // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
+    const updateProject = await projectService.updateProject({
+      _id,
+      userId,
+      toUpdate,
     });
-  } catch (e) {
-    console.log(e);
-    res.status(404).json({ message: "해당 정보를 찾을 수 없습니다." });
+
+    res.status(200).json(updateProject);
+  } catch (error) {
+    next(error);
   }
 });
 
-projectRouter.post("/delete", async (req, res, next) => {
+projectRouter.delete("/:_id", tokenValidator, async function (req, res, next) {
+  const _id = req.params._id;
   try {
-    const params = Object.values(req.body);
-    if (!validationParams(params)) {
-      console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
-      res.status(404).send({
-        message: "비어있는 데이터가 존재합니다. 확인후 요청해주세요.",
-      });
-      return;
+    const result = await projectService.deleteProject({ _id });
+    if (result.errorMessage) {
+      throw new Error(result.errorMessage);
     }
-    const { projectid } = req.body;
-
-    await projectService.deleteProject({ projectid }).then((pro) => {
-      if (pro.errorMessage) {
-        res.status(404).json({ message: "유저를 찾을 수 없습니다." });
-      }
-      res.status(200).json(pro);
-    });
-  } catch (e) {
-    console.log(e);
-    res.status(404).json({ message: "해당 정보를 찾을 수 없습니다." });
+    res.status(200).send(result);
+  } catch (error) {
+    next(error);
   }
 });
 

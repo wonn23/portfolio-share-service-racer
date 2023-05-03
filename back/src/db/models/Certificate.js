@@ -5,12 +5,8 @@ class Certificate {
     return CertificateModel.create(newCertificate);
   }
 
-  static async create({ newCertificate }) {
-    return CertificateModel.create(newCertificate);
-  }
-
-  static async findById({ user }) {
-    return CertificateModel.findOne({ id: user });
+  static async findById({ userId }) {
+    return CertificateModel.findOne({ userId: userId });
   }
 
   static async findByUserId({ userId }) {
@@ -23,8 +19,8 @@ class Certificate {
     });
   }
 
-  static async deleteById({ certificateId }) {
-    return CertificateModel.findByIdAndDelete(certificateId);
+  static async deleteById({ _id }) {
+    return CertificateModel.findByIdAndDelete(_id);
   }
 }
 

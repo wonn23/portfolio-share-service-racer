@@ -6,24 +6,20 @@ class AwardService {
     return await Award.createAward({ newAward });
   }
 
-  static async getAward({ awardId }) {
+  static async getAward({ userId }) {
     // 해당 id를 가진 데이터가 db에 존재 여부 확인
-    const award = await Award.findById({ awardId });
+    const award = await Award.findById({ userId });
     if (!award) {
       const errorMessage =
         "해당 id를 가진 수상 데이터는 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-
     return award;
-  }
-
-  static async getAwardList({ user_id }) {
-    return await Award.findByUserId({ user_id });
   }
 
   static async updateAward({ _id, userId, toUpdate }) {
     const award = await Award.findById({ _id });
+
     if (!award) {
       return { errorMessage: "Award not found." };
     }
@@ -39,17 +35,17 @@ class AwardService {
     return updatedAward;
   }
 
-  static async deleteAward({ awardId }) {
-    const isDataDeleted = await Award.deleteById({ awardId });
+  static async deleteAward({ _id }) {
+    const deletedAward = await Award.deleteById({ _id });
 
     // db에서 찾지 못한 경우, 에러 메시지 반환
-    if (!isDataDeleted) {
+    if (!deletedAward) {
       const errorMessage =
         "해당 id를 가진 수상 데이터는 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
 
-    return { status: "ok" };
+    return { status: "ok", _id };
   }
 }
 
