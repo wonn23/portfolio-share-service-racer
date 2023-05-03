@@ -14,7 +14,7 @@ projectRouter.use(tokenValidator);
  * @description
  *      로그인 세션을 체크하고
  *      세션id로 user를 찾은 후
- *      해당 유저의 Award 를 추가합니다.
+ *      해당 유저의 Project 를 추가합니다.
  *
  * @param
  *      {title,description}

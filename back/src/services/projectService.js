@@ -50,10 +50,10 @@ class ProjectService {
     if (toUpdate.description) {
       const fieldToUpdate = "description";
       const newValue = toUpdate.description;
-      project = await Project.update({ awardId, fieldToUpdate, newValue });
+      project = await Project.update({ projectId, fieldToUpdate, newValue });
     }
 
-    return award;
+    return project;
   }
 
   static async deleteProject({ projectId }) {
