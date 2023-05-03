@@ -2,8 +2,9 @@ import mongoose, { Schema, model } from "mongoose";
 
 const UserSchema = new Schema(
   {
-    id: {
-      type: String,
+    userId: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     email: {

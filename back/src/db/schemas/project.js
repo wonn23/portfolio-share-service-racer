@@ -7,32 +7,29 @@ const ProjectSchema = new Schema(
       ref: "User",
       required: true,
     },
-    title: {
+    projectName: {
       type: String,
       required: true,
     },
-    description: {
+    projectLink: {
       type: String,
-      required: false,
-      default: "",
+      required: true,
     },
-    role: {
+    introduction: {
+      type: String,
+      required: true,
+    },
+    startDate: {
+      type: String,
+      required: true,
+    },
+    myRole: {
       type: String,
       required: true,
     },
     detail: {
       type: String,
       required: true,
-    },
-    url: {
-      type: String,
-      required: false,
-      default: "",
-    },
-    projectDate: {
-      type: String,
-      required: true,
-      default: "",
     },
   },
   {

@@ -1,7 +1,7 @@
 // from을 폴더(db) 로 설정 시, 디폴트로 index.js 로부터 import함.
 import { Award } from "../db";
 
-class AwardService {
+class awardService {
   static async createAward({ newAward }) {
     return await Award.createAward({ newAward });
   }
@@ -49,4 +49,4 @@ class AwardService {
   }
 }
 
-export { AwardService };
+export { awardService };
