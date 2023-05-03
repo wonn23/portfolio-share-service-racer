@@ -6,15 +6,15 @@ const EducationSchema = new Schema(
       ref: "User",
       required: true,
     },
-    institution: {
-      type: String,
-      required: true,
-    },
-    degree: {
+    school: {
       type: String,
       required: true,
     },
     major: {
+      type: String,
+      required: true,
+    },
+    status: {
       type: String,
       required: true,
     },

@@ -17,7 +17,7 @@ educationRouter.use(tokenValidator);
  *      session에 등록된 user의 education 정보를 등록합니다.
  *
  *
- *      @param {institution, major, degree}
+ *      @param {school, major, status}
  */
 educationRouter.post("/create", async function (req, res, next) {
   try {
@@ -37,9 +37,9 @@ educationRouter.post("/create", async function (req, res, next) {
     console.log(`user Service : ${user._id}`);
     const education = new EducationModel({
       user: user._id,
-      institution: school,
+      school: school,
       major: major,
-      degree: status,
+      status: status,
     });
 
     const added = await educationService.createEducation({ education });
@@ -100,18 +100,18 @@ educationRouter.patch("/:_id", async function (req, res, next) {
   try {
     const { _id } = req.params;
     // body data 로부터 업데이트할 사용자 정보를 추출함.
-    const { userId, school, major, degree } = req.body ?? null;
+    const { user, school, major, status } = req.body ?? null;
 
-    if (!userId) {
+    if (!user) {
       throw new Error("해당 유저 아이디가 없습니다. 다시 확인해 주세요.");
     }
 
-    const toUpdate = { school, major, degree };
+    const toUpdate = { school, major, status };
 
     // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
     const updateAward = await educationService.updateEducation({
       _id,
-      userId,
+      user,
       toUpdate,
     });
 

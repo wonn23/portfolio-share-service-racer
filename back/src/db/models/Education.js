@@ -10,15 +10,18 @@ class Education {
     return EducationModel.create(newEducation);
   }
 
-  static async findById({ user_id }) {
-    return EducationModel.findOne({ user: user_id });
+  static async findById({ user }) {
+    return EducationModel.findOne({ id: user });
+  }
+
+  static async findByUserId({ userId }) {
+    return EducationModel.find({ userId });
   }
 
   static async findAll({ user_id }) {
     return EducationModel.find({ user: user_id });
   }
 
-  // education
   static async findAllEduInfo({ email }) {
     return EducationModel.find({ user: { email: email } });
   }

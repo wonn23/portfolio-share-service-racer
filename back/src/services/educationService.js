@@ -16,17 +16,20 @@ class educationService {
     return education;
   }
 
-  static async updateEducation({ _id, userId, toUpdate }) {
+  static async updateEducation({ _id, user, toUpdate }) {
     const education = await Education.findById({ _id });
     if (!education) {
       return { errorMessage: "Education not found." };
     }
 
-    if (education.user && education.user._id.toString() !== userId) {
+    console.log(education.user);
+    console.log(education.user._id.toString());
+    console.log(user);
+    if (education.user && education.user._id.toString() !== user) {
       return { errorMessage: "User is not authorized to edit this education." };
     }
 
-    const updateObj = { userId, ...toUpdate };
+    const updateObj = { user, ...toUpdate };
 
     const updatedEducation = await Education.findByIdAndUpdate(
       { _id },
