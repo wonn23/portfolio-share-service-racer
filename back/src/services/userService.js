@@ -1,7 +1,7 @@
 import { User } from "../db"; // from을 폴더(db) 로 설정 시, 디폴트로 index.js 로부터 import함.
 import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
+
 
 class userAuthService {
     static async addUser({ name, email, password }) {
@@ -17,8 +17,7 @@ class userAuthService {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // id 는 유니크 값 부여
-        const id = uuidv4();
-        const newUser = { id, name, email, password: hashedPassword };
+        const newUser = { name, email, password: hashedPassword };
 
         // db에 저장
         const createdNewUser = await User.create({ newUser });
@@ -27,7 +26,45 @@ class userAuthService {
         return createdNewUser;
     }
 
-    static async getUser({ email, password }) {
+    static async verifyUser({ email, password }){
+        const user = await User.verifyLogin({ email ,password });
+        if (!user) {
+            const errorMessage =
+                "해당 이메일은 가입 내역이 없습니다. 다시 한 번 확인해 주세요.";
+            return { errorMessage };
+        }
+
+        const correctPasswordHash = user.password;
+        const isPasswordCorrect = await bcrypt.compare(
+            password,
+            correctPasswordHash
+        );
+        if (!isPasswordCorrect) {
+            const errorMessage =
+                "비밀번호가 일치하지 않습니다. 다시 한 번 확인해 주세요.";
+            return { errorMessage };
+        }
+
+        const secretKey = process.env.JWT_SECRET_KEY || "jwt-secret-key";
+        const token = jwt.sign({ user_id: user.id }, secretKey);
+
+        const id = user.id;
+        const name = user.name;
+        const description = user.description;
+
+        const loginUser = {
+            token,
+            id,
+            email,
+            name,
+            description,
+            errorMessage: null,
+        };
+
+        return loginUser;
+    }
+
+    static async getUser({ email }) {
         // 이메일 db에 존재 여부 확인
         const user = await User.findByEmail({ email });
         if (!user) {
@@ -113,8 +150,8 @@ class userAuthService {
         return user;
     }
 
-    static async getUserInfo({ user_id }) {
-        const user = await User.findById({ user_id });
+    static async getUserInfo({ userid }) {
+        const user = await User.findById({ userid });
 
         // db에서 찾지 못한 경우, 에러 메시지 반환
         if (!user) {

@@ -1,23 +1,20 @@
 import { EducationModel } from "../schemas/education";
 
 class Education {
-    static async addEducation({education}) {
-        const createdEducation = await EducationModel.create(education);
-        return createdEducation;
+    static async addEducation({newEducation}) {
+        return EducationModel.create(newEducation);
     }
 
-    static async findById({ user_id }) {
-        const user = await EducationModel.findOne({ user: user_id });
-        return user;
+    static async findById({ educationid }) {
+        return EducationModel.findOne({ _id: educationid });
     }
 
-    static async findAll({ user_id }) {
-        const educations = await EducationModel.find({ user: user_id });
-        return educations;
+    static async findAll({ userid }) {
+        return EducationModel.find({ user: userid });
     }
 
-    static async update({ user_id, fieldToUpdate, newValue }) {
-        const filter = { _id: user_id };
+    static async update({ educationid, fieldToUpdate, newValue }) {
+        const filter = { _id: educationid };
         const update = { [fieldToUpdate]: newValue };
         const option = { returnOriginal: false };
 
@@ -27,6 +24,10 @@ class Education {
             option
         );
         return updatedUser;
+    }
+
+    static async deleteById({ educationid }) {
+        return  EducationModel.deleteOne({ _id: educationid });
     }
 
 }

@@ -13,9 +13,27 @@ const ProjectSchema = new Schema(
         },
         description: {
             type: String,
-            required: false,
-            default: "none",
+            required: true,
+            default: "",
         },
+        role:{
+            type:String,
+            required:true,
+        },
+        detail:{
+            type:String,
+            required:true,
+        },
+        url:{
+            type:String,
+            required: true,
+            default: "",
+        },
+        projectdate:{
+            type:String,
+            required:true,
+            default: "",
+        }
     },
     {
         timestamps: true,

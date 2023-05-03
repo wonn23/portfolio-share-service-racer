@@ -1,22 +1,22 @@
 import { ProjectModel } from "../schemas/project";
 
 class Project {
-    static async create({ newProject }) {
-        const createdNewProject = await ProjectModel.create(newProject);
-        return createdNewProject;
+    static async addProject({ newProject }) {
+        return await ProjectModel.create({ newProject });
     }
 
-    static async findProjectById({ projectId }) {
-        const project = await ProjectModel.findOne({ projectid: projectId });
-        return project;
-    }
-    static async findByUserId({ userId }) {
-        const projects = await ProjectModel.find({ userId });
-        return projects;
+    static async findById({ projectid }) {
+        return ProjectModel.findOne({ _id: projectid });
     }
 
-    static async update({ projectId, fieldToUpdate, newValue }) {
-        const filter = { id: projectId };
+    static async findAll({ userid }) {
+        return await ProjectModel.find({ user: userid });
+    }
+
+    static async update({ projectid, fieldToUpdate, newValue }) {
+
+        const id = projectid;
+        const filter = { _id: projectid };
         const update = { [fieldToUpdate]: newValue };
         const option = { returnOriginal: false };
 
@@ -28,11 +28,10 @@ class Project {
         return updatedProject;
     }
 
-    static async deleteById({ projectId }) {
-        const deleteResult = await ProjectModel.deleteOne({ id: projectId });
-        const isDataDeleted = deleteResult.deletedCount === 1;
-        return isDataDeleted;
+    static async deleteById({ projectid }) {
+        return await ProjectModel.deleteOne({ _id: projectid });
     }
 }
-
 export { Project };
+
+

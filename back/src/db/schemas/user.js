@@ -2,10 +2,6 @@ import mongoose, { Schema, model } from "mongoose";
 
 const UserSchema = new Schema(
     {
-        id: {
-            type: String,
-            required: true,
-        },
         email: {
             type: String,
             required: true,
@@ -23,18 +19,18 @@ const UserSchema = new Schema(
             required: false,
             default: "none",
         },
-        award:[
-            {type: mongoose.Types.ObjectId, required: true, ref: "Award"}
+        award: [
+            { type: mongoose.Types.ObjectId, required: true, ref: "Award" }
         ],
-        certificate:[
-            {type: mongoose.Types.ObjectId, required: true, ref: "Certificate"}
+        certificate: [
+            { type: mongoose.Types.ObjectId, required: true, ref: "Certificate" },
         ],
         education: [
-            { type: mongoose.Types.ObjectId, required: true, ref: "Education" }
+            { type: mongoose.Types.ObjectId, required: true, ref: "Education" },
         ],
-        project:[
-            {type: mongoose.Types.ObjectId, required: true, ref: "Project"}
-        ]
+        project: [
+            { type: mongoose.Types.ObjectId, required: true, ref: "Project" },
+        ],
     },
     {
         timestamps: true,

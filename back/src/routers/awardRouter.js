@@ -1,80 +1,106 @@
 import { Router } from "express";
 import { tokenValidator } from "../middlewares/tokenValidator";
-import { User, Award } from "../db";
-import { AwardService } from "../services/awardService";
-import {AwardModel} from "../db/schemas/award";
 import {validationParams} from "../utils/parameterValidator";
+
+import { AwardModel } from "../db/schemas/award";
+import { awardService } from "../services/awardService";
 
 const awardRouter = Router();
 awardRouter.use(tokenValidator);
 
-/**
- * @description
- *      로그인 세션을 체크하고
- *      세션id로 user를 찾은 후
- *      해당 유저의 Award 를 추가합니다.
- *
- * @param
- *      {title,description}
- */
 awardRouter.post("/create", async function (req, res, next) {
     try {
-
-    } catch (error) {
-        next(error);
-    }
-});
-
-
-/**
- * @description
- *      로그인 세션을 체크하고
- *      세션id로 user를 찾은 후
- *      해당 유저의 Award 를 업데이트합니다.
- *
- * @param
- *      {id,title,description}
- */
-
-awardRouter.post("/update", async function (req, res, next) {
-    try {
         const params = Object.values(req.body);
-
         if(!validationParams(params))
         {
             console.log('비어있는 데이터가 존재합니다. 확인후 요청해주세요.');
             res.status(404).send({message:'비어있는 데이터가 존재합니다. 확인후 요청해주세요.'});
             return;
         }
+        const {title, description, institution, awarddate} = req.body;
+        const userid = req.currentUserId;
 
-        const {id,title,description} = req.body;
-
-        const user_id = req.currentUserId;
-
-        const award = Award.findById({ user_id });
-        award.then((award) =>{
-            if(!award){
-                console.log('일치하는 수상이력이 없습니다.');
-                res.status(404).send({message:'일치하는 수상이력이 없습니다.'});
-                return;
-            }
-            const award_id = award._id;
-            const toUpdate = new AwardModel({award_id},{title:title,description:description})
-
-            const updated = toUpdate.updateOne();
-            if(!updated)
-            {
-                console.log('업데이트 실패하였습니다.');
-                res.status(404).json({message: '업데이트 실패하였습니다.'});
-                return;
-            }
-            console.log('업데이트 되었습니다.');
-            res.status(200).json(updated);
+        const newAward = new AwardModel({
+            user: userid,
+            title:title,
+            institution:institution,
+            description:description,
+            awarddate: awarddate
         });
+
+        const added = await awardService.addAward({newAward});
+        if(!added){
+            console.log('데이터베이스 입력에 실패했습니다.');
+            res.status(404).json({message: '데이터베이스 입력에 실패했습니다.'});
+            return;
+        }
+        console.log('데이터베이스 입력에 성공했습니다.');
+        res.status(200).json({message:'데이터베이스 입력 되었습니다.'});
     } catch (error) {
         next(error);
     }
 });
+
+awardRouter.post("/list",
+    async function (req, res, next) {
+       try{
+            const userid = req.currentUserId;
+            const certificate = await awardService.getAwardList({userid});
+            if(!certificate){
+                res.status(404).send({message:'데이터를 찾을 수 없습니다.'});
+            }
+            res.status(200).json(certificate);
+    } catch (e) {
+        next(e);
+    }
+});
+
+
+awardRouter.post("/update",
+    async function (req, res, next) {
+    try{
+        const { awardid, title, description, institution, awarddate } = req.body;
+        let date = new Date(awarddate)
+        if(!date){
+             date = new Date('2000-01-01')
+        }
+        const toUpdate = { awardid,title, description, institution, date };
+
+        const award = await awardService.setAward({ awardid, toUpdate });
+        if(award.errorMessage){
+            res.status(404).json({message:"해당 정보를 찾을 수 없습니다."});
+            return;
+        }
+        res.status(200).json(award);
+    }catch (e){
+        console.log(e);
+        res.status(404).json({message:"해당 정보를 찾을 수 없습니다."});
+    }
+});
+
+awardRouter.post("/delete",
+    async function (req, res, next) {
+        try {
+            const params = Object.values(req.body);
+            if(!validationParams(params))
+            {
+                console.log('비어있는 데이터가 존재합니다. 확인후 요청해주세요.');
+                res.status(404).send({message:'비어있는 데이터가 존재합니다. 확인후 요청해주세요.'});
+                return;
+            }
+            const { awardid } = req.body;
+            const deleted=await awardService.deleteAward({ awardid })
+            if (deleted.errorMessage){
+                res.status(404).json({message:"게시글을 찾을 수 없습니다."})
+            }
+            res.status(200).json(deleted);
+        }catch (e){
+            next(e);
+        }
+
+    });
+
+
 
 awardRouter.put("/awards/:id", async function (req, res, next) {
     try {

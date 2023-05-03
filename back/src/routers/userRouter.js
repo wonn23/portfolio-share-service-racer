@@ -3,7 +3,7 @@ import { Router } from "express";
 import { tokenValidator } from "../middlewares/tokenValidator";
 import { userAuthService } from "../services/userService";
 import {validationParams} from "../utils/parameterValidator";
-import {User} from "../db";
+
 
 const userAuthRouter = Router();
 
@@ -23,9 +23,11 @@ userAuthRouter.post("/user/register", async function (req, res, next) {
             email,
             password,
         });
+
         if (newUser.errorMessage) {
             res.status(500).json({message:"현재 사용중인 이메일입니다."});
         }
+
         res.status(201).json({id:newUser._id,email:newUser.email,name:newUser.name});
     } catch (error) {
         next(error);
@@ -43,12 +45,11 @@ userAuthRouter.post("/user/login", async function (req, res, next) {
         }
         const {email,password} = req.body;
 
-        const user = await userAuthService.getUser({ email, password });
+        const user = await userAuthService.verifyUser({ email , password });
 
         if (user.errorMessage) {
             throw new Error(user.errorMessage);
         }
-
         res.status(200).send(user);
     } catch (error) {
         next(error);
@@ -67,7 +68,7 @@ userAuthRouter.post("/user/list",tokenValidator,
     tokenValidator,
     async function (req, res, next) {
         try {
-            const userId = req.currentUserId;
+            const userid = req.currentUserId;
             /**
              * Todo:
              *      요청한 유저의 인증정보 로그
@@ -76,7 +77,7 @@ userAuthRouter.post("/user/list",tokenValidator,
             const users = await userAuthService.getUsers();
             const res_arr = [];
             for(let i=0;i<users.length;i++){
-                // console.log(`${users[i]._id} ${users[i].email} ${users[i].name} `);
+                console.log(`${users[i]._id} ${users[i].email} ${users[i].name} `);
                 res_arr.push({id:users[i]._id,email:users[i].email,name:users[i].name});
             }
             res.status(200).json(res_arr);
@@ -97,20 +98,19 @@ userAuthRouter.post(
     tokenValidator,
     async function (req, res, next) {
         try {
-            const user_id = req.currentUserId;
-            if(!user_id){
+            const userid = req.currentUserId;
+            if(!userid){
                 res.status(404).json({message:"유저를 찾을 수 없습니다."})
             }
             const current = await userAuthService.getUserInfo({
-                user_id,
+                userid
             });
-
 
             if (current.errorMessage) {
                 throw new Error(current.errorMessage);
             }
-            console.log(`id : ${current._id} name: ${current.name}`);
-            res.status(200).send(current);
+
+            res.status(200).send({id:current._id,email:current.email,name:current.name});
         } catch (error) {
             next(error);
         }
@@ -122,12 +122,12 @@ userAuthRouter.get(
     tokenValidator,
     async function (req, res, next) {
         try {
-            const user_id = req.currentUserId;
-            if(!user_id){
+            const userid = req.currentUserId;
+            if(!userid){
                 res.status(404).json({message:"유저를 찾을 수 없습니다."})
             }
             const current = await userAuthService.getUserInfo({
-                user_id,
+                userid,
             });
 
             if (current.errorMessage) {
@@ -145,7 +145,7 @@ userAuthRouter.get(
  *      user의 세션정보를 조회하여
  *      해당 user의 정보를 update합니다.
  *
- *      return {id:"id"email:"email",,name:"name",description:"description"}
+ *      return {id:"id",description:"description"}
  */
 userAuthRouter.post(
     "/user/update",
@@ -159,74 +159,56 @@ userAuthRouter.post(
                 res.status(404).send({message:'비어있는 데이터가 존재합니다. 확인후 요청해주세요.'});
                 return;
             }
-            const {email,name,description} = req.body;
-            const user_id = req.body.id
+            const {description} = req.body;
 
-            const toUpdate = { name, email, description };
+            let userid = req.currentUserId;
+            if(!userid){
+                res.status(404).json({message:"유저를 찾을 수 없습니다."})
+            }
+            const user = userAuthService.getUserInfo({userid});
+            userid = user._id;
 
-            await userAuthService.setUser({ user_id, toUpdate })
-                .then((user) => {
-                    if (user.errorMessage) {
-                        res.status(404).json({message:"유저를 찾을 수 없습니다."})
-                    }
-                    res.status(200).json(user);
-                });
-
+            const toUpdate = { description:description };
+            const updatedUser = await userAuthService.setUser({ userid, toUpdate });
+            if(updatedUser.errorMessage){
+                res.status(404).json({message:"유저정보를 업데이트 할 수 없습니다."})
+            }
+            res.status(200).send({id:updatedUser._id,email:updatedUser.email,name:updatedUser.name});
         } catch (error) {
             next(error);
         }
     }
 );
 
-
-// userAuthRouter.post(
-//     "/users/update",
-//     tokenValidator,
-//     async function (req, res, next) {
-//         try {
-//             const params = Object.values(req.body);
-//             let userId ;
-//             if(!validationParams(params))
-//             {
-//                 console.log('비어있는 데이터가 존재합니다. 확인후 요청해주세요.');
-//                 res.status(404).send({message:'비어있는 데이터가 존재합니다. 확인후 요청해주세요.'});
-//                 return;
-//             }
-//
-//             const {user_id} = req.body;
-//             await userAuthService.getUserInfo({ user_id })
-//                 .then((user) =>{
-//                     if (user.errorMessage) {
-//                         res.status(404).json({message:"유저를 찾을 수 없습니다."});
-//                     }
-//                     console.log(`${user.name} ${user.description} ${user.email}`);
-//                     res.status(200).send(user);
-//                 } )
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
 
 userAuthRouter.get(
     "/users/:id",
     tokenValidator,
     async function (req, res, next) {
         try {
-            const user_id = req.params.id;
-            const currentUserInfo = await userAuthService.getUserInfo({ user_id });
-
-            if (currentUserInfo.errorMessage) {
-                throw new Error(currentUserInfo.errorMessage);
+            const params = Object.values(req.params);
+            let userId ;
+            if(!validationParams(params))
+            {
+                console.log('비어있는 데이터가 존재합니다. 확인후 요청해주세요.');
+                res.status(404).send({message:'비어있는 데이터가 존재합니다. 확인후 요청해주세요.'});
+                return;
             }
 
-            res.status(200).send(currentUserInfo);
+            const user_id = req.params.id;
+            await userAuthService.getUserInfo({ user_id })
+                .then((user) =>{
+                    if (user.errorMessage) {
+                        res.status(404).json({message:"유저를 찾을 수 없습니다."});
+                    }
+                    console.log(`${user.name} ${user.description} ${user.email}`);
+                    res.status(200).send(user);
+                } )
         } catch (error) {
             next(error);
         }
     }
 );
-
 userAuthRouter.put(
     "/user/:id",
     tokenValidator,

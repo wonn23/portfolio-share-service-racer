@@ -11,8 +11,8 @@ class User {
         return user;
     }
 
-    static async findById({ user_id }) {
-        const user = await UserModel.findOne({ id: user_id });
+    static async findById({ userid }) {
+        const user = await UserModel.findOne({ _id: userid });
         return user;
     }
 
@@ -21,8 +21,13 @@ class User {
         return users;
     }
 
-    static async update({ user_id, fieldToUpdate, newValue }) {
-        const filter = { id: user_id };
+    static async verifyLogin({email, password}){
+        const user = await UserModel.findOne({ email:email});
+        return user;
+    }
+
+    static async update({ userid, fieldToUpdate, newValue }) {
+        const filter = { _id: userid };
         const update = { [fieldToUpdate]: newValue };
         const option = { returnOriginal: false };
 

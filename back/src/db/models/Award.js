@@ -1,38 +1,31 @@
 import { AwardModel } from "../schemas/award";
 
 class Award {
-    static async create({ newAward }) {
-        const createdNewAward = await AwardModel.create(newAward);
-        return createdNewAward;
+    static async addAward({ newAward }) {
+        return AwardModel.create(newAward);
     }
 
-    static async findById({ awardId }) {
-        const award = await AwardModel.findOne({ id: awardId });
-        return award;
+    static async findById({ awardid }) {
+        return await AwardModel.findOne({ _id: awardid });
     }
 
-    static async findByUserId({ userId }) {
-        const awards = await AwardModel.find({ userId });
-        return awards;
+    static async findByUserId({ userid }) {
+        return  await AwardModel.find({ user:userid });
     }
 
-    static async update({ awardId, fieldToUpdate, newValue }) {
-        const filter = { id: awardId };
+    static async update({ awardid, fieldToUpdate, newValue }) {
+        const filter = { _id: awardid };
         const update = { [fieldToUpdate]: newValue };
         const option = { returnOriginal: false };
-
-        const updatedAward = await AwardModel.findOneAndUpdate(
+        const updatedUser = await AwardModel.findOneAndUpdate(
             filter,
             update,
             option
         );
-        return updatedAward;
+        return updatedUser;
     }
-
-    static async deleteById({ awardId }) {
-        const deleteResult = await AwardModel.deleteOne({ id: awardId });
-        const isDataDeleted = deleteResult.deletedCount === 1;
-        return isDataDeleted;
+    static async deleteById({ awardid }) {
+        return  await AwardModel.findByIdAndDelete(awardid);
     }
 }
 

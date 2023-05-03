@@ -1,10 +1,14 @@
 import mongoose, { Schema, model } from "mongoose";
 
-const Award = new Schema(
+const AwardSchema = new Schema(
     {
         user: {
             type: mongoose.Types.ObjectId,
             ref:"User",
+            required: true,
+        },
+        institution:{
+            type: String,
             required: true,
         },
         title: {
@@ -15,12 +19,16 @@ const Award = new Schema(
             type: String,
             required: true,
         },
+        awarddate:{
+            type: Date,
+            required: true,
+        }
     },
     {
         timestamps: true,
     }
 );
 
-const AwardModel = model("Award", Award);
+const AwardModel = model("Award", AwardSchema);
 
 export { AwardModel };
