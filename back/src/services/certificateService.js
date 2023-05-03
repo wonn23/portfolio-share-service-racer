@@ -3,8 +3,8 @@ import { Certificate } from "../db";
 import { v4 as uuidv4 } from "uuid";
 
 class CertificateService {
-  static async addCertificate({ newCertificate }) {
-    return Certificate.addCertificate({ newCertificate });
+  static async createCertificate({ newCertificate }) {
+    return Certificate.createCertificate({ newCertificate });
   }
 
   static async getCertificate({ certificateId }) {
@@ -24,29 +24,26 @@ class CertificateService {
     return certificates;
   }
 
-  static async setCertificate({ certificateId, toUpdate }) {
-    let certificate = await Certificate.findById({ certificateId });
-
-    // db에서 찾지 못한 경우, 에러 메시지 반환
+  static async updateCertificate({ _id, userId, toUpdate }) {
+    const certificate = await Certificate.findById({ _id });
     if (!certificate) {
-      const errorMessage =
-        "해당 id를 가진 자격증 데이터는 없습니다. 다시 한 번 확인해 주세요.";
-      return { errorMessage };
+      return { errorMessage: "Certificate not found." };
     }
 
-    if (toUpdate.title) {
-      const fieldToUpdate = "title";
-      const newValue = toUpdate.title;
-      certificate = await Certificate.update({ certificateId, fieldToUpdate, newValue });
+    if (certificate.user && certificate.user._id.toString() !== userId) {
+      return {
+        errorMessage: "User is not authorized to edit this certificate.",
+      };
     }
 
-    if (toUpdate.description) {
-      const fieldToUpdate = "description";
-      const newValue = toUpdate.description;
-      certificate = await Certificate.update({ certificateId, fieldToUpdate, newValue });
-    }
+    const updateObj = { userId, ...toUpdate };
 
-    return certificate;
+    const updatedCertificate = await Certificate.findByIdAndUpdate(
+      { _id },
+      updateObj
+    );
+
+    return updatedCertificate;
   }
 
   static async deleteCertificate({ certificateId }) {
