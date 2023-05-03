@@ -64,7 +64,11 @@ educationRouter.post("/list", async function (req, res, next) {
       if (!u) {
         res.status(404).json({ message: "유저를 찾을수 없습니다." });
       }
+      console.log(u);
+      console.log("=======");
       const finded = EducationModel.find({ userId: u._id });
+      console.log(finded);
+
       finded.then((data) => {
         res.send(data);
       });
@@ -83,7 +87,7 @@ educationRouter.post("/list", async function (req, res, next) {
  *      @params
  *      {userId,school, major, status}
  */
-educationRouter.patch("/:_id", async function (req, res, next) {
+educationRouter.put("/:_id", async function (req, res, next) {
   try {
     const { _id } = req.params;
 

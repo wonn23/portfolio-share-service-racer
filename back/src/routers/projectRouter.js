@@ -58,7 +58,7 @@ projectRouter.post("/list", async (req, res, next) => {
       if (!u) {
         res.status(404).json({ message: "유저를 찾을수 없습니다." });
       }
-      const finded = ProjectModel.find({ userId: u._id });
+      const finded = ProjectModel.find({ user: u._id });
       finded.then((data) => {
         res.send(data);
       });
@@ -68,7 +68,7 @@ projectRouter.post("/list", async (req, res, next) => {
   }
 });
 
-projectRouter.patch("/:_id", async function (req, res, next) {
+projectRouter.put("/:_id", async function (req, res, next) {
   try {
     const { _id } = req.params;
     // body data 로부터 업데이트할 사용자 정보를 추출함.

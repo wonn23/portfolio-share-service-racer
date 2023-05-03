@@ -16,7 +16,7 @@ class educationService {
   }
 
   static async updateEducation({ _id, userId, toUpdate }) {
-    const education = await Education.findById({ user });
+    const education = await Education.findById({ userId });
 
     if (!education) {
       return { errorMessage: "Education not found." };

@@ -93,7 +93,7 @@ awardRouter.post("/list", async function (req, res, next) {
  */
 
 // award 수정
-awardRouter.patch("/:_id", async function (req, res, next) {
+awardRouter.put("/:_id", async function (req, res, next) {
   try {
     const { _id } = req.params;
     // body data 로부터 업데이트할 사용자 정보를 추출함.

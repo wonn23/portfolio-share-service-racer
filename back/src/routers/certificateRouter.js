@@ -92,7 +92,7 @@ certificateRouter.post("/list", async function (req, res, next) {
  *      @params
  *      {userId,school, major, status}
  */
-certificateRouter.patch("/:_id", async function (req, res, next) {
+certificateRouter.put("/:_id", async function (req, res, next) {
   try {
     const { _id } = req.params;
     // body data 로부터 업데이트할 사용자 정보를 추출함.
