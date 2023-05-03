@@ -63,20 +63,14 @@ awardRouter.post("/create", async function (req, res, next) {
  *
  * @param {email: "String"}
  */
-awardRouter.post("/list", async function (req, res, next) {
+awardRouter.get("/:userId", async function (req, res, next) {
   try {
-    const user_id = req.currentUserId;
-    const user = User.findById({ user_id });
-
-    user.then((u) => {
-      if (!u) {
-        res.status(404).json({ message: "유저를 찾을수 없습니다." });
-      }
-      const finded = AwardModel.find({ userId: u._id });
-      finded.then((data) => {
-        res.send(data);
-      });
-    });
+    const { userId } = req.params;
+    const awardList = await AwardService.getAward({ userId });
+    if (awardList.errorMessage) {
+      throw new Error(awardList.errorMessage);
+    }
+    return res.status(200).send(awardList);
   } catch (e) {
     next(e);
   }

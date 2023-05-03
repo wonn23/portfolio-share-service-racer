@@ -49,20 +49,14 @@ projectRouter.post("/create", async (req, res, next) => {
   }
 });
 
-projectRouter.post("/list", async (req, res, next) => {
+projectRouter.get("/:userId", async function (req, res, next) {
   try {
-    const user_id = req.currentUserId;
-    const user = User.findById({ user_id });
-
-    user.then((u) => {
-      if (!u) {
-        res.status(404).json({ message: "유저를 찾을수 없습니다." });
-      }
-      const finded = ProjectModel.find({ user: u._id });
-      finded.then((data) => {
-        res.send(data);
-      });
-    });
+    const { userId } = req.params;
+    const projectList = await projectService.getProject({ userId });
+    if (projectList.errorMessage) {
+      throw new Error(projectList.errorMessage);
+    }
+    return res.status(200).send(projectList);
   } catch (e) {
     next(e);
   }

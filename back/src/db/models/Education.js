@@ -10,7 +10,7 @@ class Education {
   }
 
   static async findByUserId({ userId }) {
-    return EducationModel.find({ userId });
+    return EducationModel.find({ userId: userId });
   }
 
   static async findByIdAndUpdate({ _id }, update) {

@@ -65,19 +65,14 @@ certificateRouter.post("/create", async function (req, res, next) {
  *
  * @param {email: "String"}
  */
-certificateRouter.post("/list", async function (req, res, next) {
+certificateRouter.get("/:userId", async function (req, res, next) {
   try {
-    const user_id = req.currentUserId;
-    const user = User.findById({ user_id });
-    user.then((u) => {
-      if (!u) {
-        res.status(404).json({ message: "유저를 찾을수 없습니다." });
-      }
-      const finded = CertificateModel.find({ userId: u._id });
-      finded.then((data) => {
-        res.send(data);
-      });
-    });
+    const { userId } = req.params;
+    const certificateList = await CertificateService.getCertificate({ userId });
+    if (certificateList.errorMessage) {
+      throw new Error(certificateList.errorMessage);
+    }
+    return res.status(200).send(certificateList);
   } catch (e) {
     next(e);
   }
