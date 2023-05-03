@@ -2,8 +2,8 @@
 import { Award } from "../db";
 
 class AwardService {
-  static async addAward({ newAward }) {
-    return await Award.addAward({ newAward });
+  static async createAward({ newAward }) {
+    return await Award.createAward({ newAward });
   }
 
   static async getAward({ awardId }) {

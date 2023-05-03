@@ -1,7 +1,7 @@
 import { AwardModel } from "../schemas/award";
 
 class Award {
-  static async addAward({ newAward }) {
+  static async createAward({ newAward }) {
     return AwardModel.create(newAward);
   }
 
