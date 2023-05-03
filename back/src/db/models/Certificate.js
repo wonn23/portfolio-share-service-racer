@@ -1,38 +1,37 @@
 import { CertificateModel } from "../schemas/certificate";
 
 class Certificate {
+  static async addCertificate({ newCertificate }) {
+    return await CertificateModel.create(newCertificate);
+  }
+
   static async create({ newCertificate }) {
-    const creatednewCertificate = await CertificateModel.create(newCertificate);
-    return creatednewCertificate;
+    return await CertificateModel.create(newCertificate);
   }
 
   static async findById({ certificateId }) {
-    const certificate = await CertificateModel.findOne({ id: certificateId });
-    return certificate;
+    return await CertificateModel.findOne({ id: certificateId });
   }
 
-  static async findByUserId({ user_id }) {
-    const certificates = await CertificateModel.find({ user_id });
-    return certificates;
+  static async findByUserId({ userId }) {
+    return await CertificateModel.find({ userId });
   }
 
-  static async update({ certificateId, fieldToUpdate, newValue }) {
-    const filter = { id: certificateId };
+  static async update({ user_id, fieldToUpdate, newValue }) {
+    const filter = { _id: user_id };
     const update = { [fieldToUpdate]: newValue };
     const option = { returnOriginal: false };
 
-    const updatedCertificate = await CertificateModel.findOneAndUpdate(
-        filter,
-        update,
-        option
+    const updatedUser = await CertificateModel.findOneAndUpdate(
+      filter,
+      update,
+      option
     );
-    return updatedCertificate;
+    return updatedUser;
   }
 
   static async deleteById({ certificateId }) {
-    const deleteResult = await CertificateModel.deleteOne({ id: certificateId });
-    const isDataDeleted = deleteResult.deletedCount === 1;
-    return isDataDeleted;
+    return await CertificateModel.findByIdAndDelete(certificateId);
   }
 }
 

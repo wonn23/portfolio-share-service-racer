@@ -3,15 +3,8 @@ import { Certificate } from "../db";
 import { v4 as uuidv4 } from "uuid";
 
 class CertificateService {
-  static async addCertificate({ user_id, title, description }) {
-    // id로 유니크 값 사용
-    const id = uuidv4();
-
-    // db에 저장
-    const newCertificate = { id, user_id, title, description };
-    const createdNewCertificate = await Certificate.create({ newCertificate });
-
-    return createdNewCertificate;
+  static async addCertificate({ newCertificate }) {
+    return Certificate.addCertificate({ newCertificate });
   }
 
   static async getCertificate({ certificateId }) {
@@ -19,7 +12,7 @@ class CertificateService {
     const certificate = await Certificate.findById({ certificateId });
     if (!certificate) {
       const errorMessage =
-        "해당 id를 가진 데이터는 없습니다. 다시 한 번 확인해 주세요.";
+        "해당 id를 가진 자격증 데이터는 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
 
@@ -37,7 +30,7 @@ class CertificateService {
     // db에서 찾지 못한 경우, 에러 메시지 반환
     if (!certificate) {
       const errorMessage =
-        "해당 id를 가진 데이터는 없습니다. 다시 한 번 확인해 주세요.";
+        "해당 id를 가진 자격증 데이터는 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
 
@@ -57,12 +50,12 @@ class CertificateService {
   }
 
   static async deleteCertificate({ certificateId }) {
-    const isDataDeleted = await Certificate.deleteById({ CertificateId });
+    const isDataDeleted = await Certificate.deleteById({ certificateId });
 
     // db에서 찾지 못한 경우, 에러 메시지 반환
     if (!isDataDeleted) {
       const errorMessage =
-        "해당 id를 가진 데이터는 없습니다. 다시 한 번 확인해 주세요.";
+        "해당 id를 가진 자격증 데이터는 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
 
