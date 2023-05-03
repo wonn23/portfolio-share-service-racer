@@ -16,14 +16,24 @@ class educationService {
     return education;
   }
 
-  static async editEducation({ education }) {
-    const editedEducation = await Education.edit({ education });
-    if (!editedEducation) {
-      const errorMessage =
-        "해당 학력 데이터는 없습니다. 다시 한 번 확인해 주세요.";
-      return { errorMessage };
+  static async updateEducation({ _id, userId, toUpdate }) {
+    const education = await Education.findById({ _id });
+    if (!education) {
+      return { errorMessage: "Education not found." };
     }
-    return editedEducation;
+
+    if (education.user && education.user._id.toString() !== userId) {
+      return { errorMessage: "User is not authorized to edit this education." };
+    }
+
+    const updateObj = { userId, ...toUpdate };
+
+    const updatedEducation = await Education.findByIdAndUpdate(
+      { _id },
+      updateObj
+    );
+
+    return updatedEducation;
   }
 
   static async deleteEducation({ educationId }) {
