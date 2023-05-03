@@ -73,7 +73,7 @@ educationRouter.post("/create", async function (req, res, next) {
       degree: status,
     });
 
-    const added = await educationService.addEducation({ education });
+    const added = await educationService.createEducation({ education });
 
     if (!added) {
       console.log("데이터베이스 입력에 실패했습니다.");

@@ -93,7 +93,7 @@ awardRouter.post("/list", async function (req, res, next) {
  *      해당 유저의 Award 를 업데이트합니다.
  *
  * @param
- *      {id,title,description}
+ *      {_id,title,description}
  */
 
 // award 수정

@@ -2,8 +2,8 @@ import { Education } from "../db";
 import { v4 as uuidv4 } from "uuid";
 
 class educationService {
-  static async addEducation({ education }) {
-    return await Education.addEducation({ education });
+  static async createEducation({ education }) {
+    return await Education.createEducation({ education });
   }
 
   static async getEducation({ userId }) {

@@ -35,7 +35,7 @@ class AwardService {
     const updateObj = { userId, ...toUpdate };
 
     const updatedAward = await Award.findByIdAndUpdate({ _id }, updateObj);
-    console.log(updatedAward);
+
     return updatedAward;
   }
 

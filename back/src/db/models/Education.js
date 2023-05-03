@@ -2,29 +2,25 @@ import { EducationModel } from "../schemas/education";
 
 class Education {
   // education 생성
-  static async addEducation({ education }) {
+  static async createEducation({ education }) {
     return await EducationModel.create(education);
   }
 
   static async findById({ user_id }) {
-    const user = await EducationModel.findOne({ user: user_id });
-    return user;
+    return EducationModel.findOne({ user: user_id });
   }
 
   static async findAll({ user_id }) {
-    const educations = await EducationModel.find({ user: user_id });
-    return educations;
+    return EducationModel.find({ user: user_id });
   }
 
   static async create({ newEducation }) {
-    const createdEducation = await EducationModel.create(newEducation);
-    return createdEducation;
+    return EducationModel.create(newEducation);
   }
 
   // education
   static async findAllEduInfo({ email }) {
-    const educations = await EducationModel.find({ user: { email: email } });
-    return educations;
+    return EducationModel.find({ user: { email: email } });
   }
 
   // education 수정
