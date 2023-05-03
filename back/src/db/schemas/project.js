@@ -16,24 +16,24 @@ const ProjectSchema = new Schema(
       required: false,
       default: "",
     },
-    role: {
-      type: String,
-      required: true,
-    },
-    detail: {
-      type: String,
-      required: true,
-    },
-    url: {
-      type: String,
-      required: false,
-      default: "",
-    },
-    projectDate: {
-      type: String,
-      required: true,
-      default: "",
-    },
+    // role: {
+    //   type: String,
+    //   required: true,
+    // },
+    // detail: {
+    //   type: String,
+    //   required: true,
+    // },
+    // url: {
+    //   type: String,
+    //   required: false,
+    //   default: "",
+    // },
+    // projectDate: {
+    //   type: String,
+    //   required: true,
+    //   default: "",
+    // },
   },
   {
     timestamps: true,

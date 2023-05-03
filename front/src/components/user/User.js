@@ -1,36 +1,72 @@
-import React, { useState, useEffect } from "react";
-import UserEditForm from "./UserEditForm";
-import UserCard from "./UserCard";
-import * as Api from "../../api";
+/* eslint-disable no-shadow */
+/* eslint-disable react/prop-types */
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUser } from 'modules/sagas/user';
+import styled from 'styled-components';
 
-function User({ portfolioOwnerId, isEditable }) {
-  // useState 훅을 통해 isEditing 상태를 생성함.
+import UserEditForm from './UserEditForm';
+import UserCard from './UserCard';
+
+const User = ({ portfolioOwnerId, isEditable }) => {
+  const dispatch = useDispatch();
+  const { fetchUser, fetchError, loading } = useSelector(
+    ({ profile, loading }) => ({
+      fetchUser: profile.user,
+      fetchError: profile.error,
+      loading: loading['profile/GET_USER'],
+    }),
+  );
   const [isEditing, setIsEditing] = useState(false);
-  // useState 훅을 통해 user 상태를 생성함.
   const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // "users/유저id" 엔드포인트로 GET 요청을 하고, user를 response의 data로 세팅함.
-    Api.get("users", portfolioOwnerId).then((res) => setUser(res.data));
-  }, [portfolioOwnerId]);
+    dispatch(getUser(portfolioOwnerId));
+  }, [dispatch, portfolioOwnerId]);
+
+  useEffect(() => {
+    if (fetchError) {
+      setError('유저 정보 획득 실패');
+    }
+  }, [fetchError]);
+
+  useEffect(() => {
+    if (fetchUser) {
+      setUser(fetchUser);
+    }
+  }, [fetchUser]);
+
+  if (loading) {
+    return 'loading...';
+  }
+
+  if (error) {
+    return <ErrorMessage>User컴포넌트 에러 발생</ErrorMessage>;
+  }
+
+  if (isEditing) {
+    return <UserEditForm user={user} setIsEditing={setIsEditing} />;
+  }
 
   return (
-    <>
-      {isEditing ? (
-        <UserEditForm
-          user={user}
-          setIsEditing={setIsEditing}
-          setUser={setUser}
-        />
-      ) : (
+    <div>
+      {!loading && (
         <UserCard
           user={user}
           setIsEditing={setIsEditing}
           isEditable={isEditable}
         />
       )}
-    </>
+    </div>
   );
-}
+};
 
 export default User;
+
+const ErrorMessage = styled.div`
+  color: red;
+  text-align: center;
+  font-size: 1rem;
+  margin-top: 1rem;
+`;

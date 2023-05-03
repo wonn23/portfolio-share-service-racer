@@ -49,9 +49,9 @@ projectRouter.post("/create", async (req, res, next) => {
   }
 });
 
-projectRouter.get("/", async function (req, res, next) {
+projectRouter.get("/:userId", async function (req, res, next) {
   try {
-    const userId = req.currentUserId;
+    const { userId } = req.params;
     const projectList = await projectService.getProject({ userId });
     if (projectList.errorMessage) {
       throw new Error(projectList.errorMessage);

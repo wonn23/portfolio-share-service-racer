@@ -63,9 +63,10 @@ awardRouter.post("/create", async function (req, res, next) {
  *
  * @param {email: "String"}
  */
-awardRouter.get("/", async function (req, res, next) {
+awardRouter.get("/:userId", async function (req, res, next) {
   try {
-    const userId = req.currentUserId;
+    const { userId } = req.params;
+
     const awardList = await AwardService.getAward({ userId });
     if (awardList.errorMessage) {
       throw new Error(awardList.errorMessage);

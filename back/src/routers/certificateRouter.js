@@ -65,9 +65,9 @@ certificateRouter.post("/create", async function (req, res, next) {
  *
  * @param {email: "String"}
  */
-certificateRouter.get("/", async function (req, res, next) {
+certificateRouter.get("/:userId", async function (req, res, next) {
   try {
-    const userId = req.currentUserId;
+    const { userId } = req.params;
     const certificateList = await CertificateService.getCertificate({ userId });
     if (certificateList.errorMessage) {
       throw new Error(certificateList.errorMessage);
