@@ -7,11 +7,11 @@ const CertificateSchema = new Schema(
       ref: "User",
       required: true,
     },
-    institution: {
+    agency: {
       type: String,
       required: true,
     },
-    title: {
+    credit: {
       type: String,
       required: true,
     },
@@ -19,7 +19,7 @@ const CertificateSchema = new Schema(
       type: String,
       required: true,
     },
-    issueDate: {
+    acquireDate: {
       type: String,
       required: true,
     },
@@ -29,6 +29,6 @@ const CertificateSchema = new Schema(
   }
 );
 
-const CertificateModel = model("certificate", CertificateSchema);
+const CertificateModel = model("Certificate", CertificateSchema);
 
 export { CertificateModel };

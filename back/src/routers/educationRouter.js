@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { User } from "../db";
 import { tokenValidator } from "../middlewares/tokenValidator";
 import { validationParams } from "../utils/parameterValidator";
 

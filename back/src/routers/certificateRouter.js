@@ -1,11 +1,10 @@
 import { Router } from "express";
-import { User } from "../db";
 import { tokenValidator } from "../middlewares/tokenValidator";
 import { validationParams } from "../utils/parameterValidator";
 
 import { userAuthService } from "../services/userService";
 import { CertificateModel } from "../db/schemas/certificate";
-import { CertificateService } from "../services/certificateService";
+import { certificateService } from "../services/certificateService";
 
 const certificateRouter = Router();
 certificateRouter.use(tokenValidator);
@@ -41,7 +40,7 @@ certificateRouter.post("/create", async function (req, res, next) {
       description: description,
     });
 
-    const created = await CertificateService.createCertificate({
+    const created = await certificateService.createCertificate({
       newCertificate,
     });
 
@@ -68,7 +67,7 @@ certificateRouter.post("/create", async function (req, res, next) {
 certificateRouter.get("/:userId", async function (req, res, next) {
   try {
     const { userId } = req.params;
-    const certificateList = await CertificateService.getCertificate({ userId });
+    const certificateList = await certificateService.getCertificate({ userId });
     if (certificateList.errorMessage) {
       throw new Error(certificateList.errorMessage);
     }
@@ -100,7 +99,7 @@ certificateRouter.put("/:_id", async function (req, res, next) {
     const toUpdate = { title, description };
 
     // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
-    const updateCertificate = await CertificateService.updateCertificate({
+    const updateCertificate = await certificateService.updateCertificate({
       _id,
       userId,
       toUpdate,
@@ -118,7 +117,7 @@ certificateRouter.delete(
   async function (req, res, next) {
     const _id = req.params._id;
     try {
-      const result = await CertificateService.deleteCertificate({ _id });
+      const result = await certificateService.deleteCertificate({ _id });
       if (result.errorMessage) {
         throw new Error(result.errorMessage);
       }

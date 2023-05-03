@@ -1,7 +1,7 @@
 // from을 폴더(db) 로 설정 시, 디폴트로 index.js 로부터 import함.
 import { Certificate } from "../db";
 
-class CertificateService {
+class certificateService {
   static async createCertificate({ newCertificate }) {
     return Certificate.createCertificate({ newCertificate });
   }
@@ -55,4 +55,4 @@ class CertificateService {
   }
 }
 
-export { CertificateService };
+export { certificateService };

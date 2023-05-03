@@ -1,8 +1,8 @@
-import is from "@sindresorhus/is";
 import { Router } from "express";
 import { tokenValidator } from "../middlewares/tokenValidator";
-import { userAuthService } from "../services/userService";
 import {validationParams} from "../utils/parameterValidator";
+
+import { userAuthService } from "../services/userService";
 
 const userAuthRouter = Router();
 

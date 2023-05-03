@@ -1,11 +1,10 @@
 import { Router } from "express";
-import { User } from "../db";
 import { tokenValidator } from "../middlewares/tokenValidator";
 import { validationParams } from "../utils/parameterValidator";
 
 import { userAuthService } from "../services/userService";
 import { AwardModel } from "../db/schemas/award";
-import { AwardService } from "../services/awardService";
+import { awardService } from "../services/awardService";
 
 const awardRouter = Router();
 awardRouter.use(tokenValidator);
@@ -41,7 +40,7 @@ awardRouter.post("/create", async function (req, res, next) {
       description: description,
     });
 
-    const created = await AwardService.createAward({ newAward });
+    const created = await awardService.createAward({ newAward });
 
     if (!created) {
       console.log("데이터베이스 입력에 실패했습니다.");
@@ -66,7 +65,7 @@ awardRouter.post("/create", async function (req, res, next) {
 awardRouter.get("/:userId", async function (req, res, next) {
   try {
     const { userId } = req.params;
-    const awardList = await AwardService.getAward({ userId });
+    const awardList = await awardService.getAward({ userId });
     if (awardList.errorMessage) {
       throw new Error(awardList.errorMessage);
     }
@@ -100,7 +99,7 @@ awardRouter.put("/:_id", async function (req, res, next) {
     const toUpdate = { title, description };
 
     // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
-    const updateAward = await AwardService.updateAward({
+    const updateAward = await awardService.updateAward({
       _id,
       userId,
       toUpdate,
@@ -115,7 +114,7 @@ awardRouter.put("/:_id", async function (req, res, next) {
 awardRouter.delete("/:_id", tokenValidator, async function (req, res, next) {
   const _id = req.params._id;
   try {
-    const result = await AwardService.deleteAward({ _id });
+    const result = await awardService.deleteAward({ _id });
     if (result.errorMessage) {
       throw new Error(result.errorMessage);
     }
