@@ -11,7 +11,7 @@ import { User } from "../db";
 const projectRouter = Router();
 projectRouter.use(tokenValidator);
 
-projectRouter.post("/add", async (req, res, next) => {
+projectRouter.post("/create", async (req, res, next) => {
   try {
     const params = Object.values(req.body);
     if (!validationParams(params)) {
@@ -75,16 +75,13 @@ projectRouter.post("/update", async (req, res, next) => {
     const params = Object.values(req.body);
     if (!validationParams(params)) {
       console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
-      res
-        .status(404)
-        .send({
-          message: "비어있는 데이터가 존재합니다. 확인후 요청해주세요.",
-        });
+      res.status(404).send({
+        message: "비어있는 데이터가 존재합니다. 확인후 요청해주세요.",
+      });
       return;
     }
-    const { projectId, title, description, role, detail, url, projectdate } =
+    const { projectid, title, description, role, detail, url, projectdate } =
       req.body;
-    const user_id = req.body.id;
 
     const toUpdate = { title, description, role, detail, url, projectdate };
 
@@ -96,32 +93,31 @@ projectRouter.post("/update", async (req, res, next) => {
     });
   } catch (e) {
     console.log(e);
+    res.status(404).json({ message: "해당 정보를 찾을 수 없습니다." });
   }
 });
 
-projectRouter.delete("/projects/:id", async function (req, res, next) {
+projectRouter.post("/delete", async (req, res, next) => {
   try {
-    const projectId = req.params.id;
-
-    const result = await ProjectService.deleteProject({ projectId });
-
-    if (result.errorMessage) {
-      throw new Error(result.errorMessage);
+    const params = Object.values(req.body);
+    if (!validationParams(params)) {
+      console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
+      res.status(404).send({
+        message: "비어있는 데이터가 존재합니다. 확인후 요청해주세요.",
+      });
+      return;
     }
+    const { projectid } = req.body;
 
-    res.status(200).send(result);
-  } catch (error) {
-    next(error);
-  }
-});
-
-projectRouter.get("/projectlist/:user_id", async function (req, res, next) {
-  try {
-    const user_id = req.params.user_id;
-    const projectList = await ProjectService.getProjectList({ user_id });
-    res.status(200).send(projectList);
-  } catch (error) {
-    next(error);
+    await projectService.deleteProject({ projectid }).then((pro) => {
+      if (pro.errorMessage) {
+        res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+      }
+      res.status(200).json(pro);
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(404).json({ message: "해당 정보를 찾을 수 없습니다." });
   }
 });
 

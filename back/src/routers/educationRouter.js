@@ -1,6 +1,3 @@
-import { Router } from "express";
-import { Education, User } from "../db";
-import { Education } from "../db/models/Education";
 import { tokenValidator } from "../middlewares/tokenValidator";
 import { Router } from "express";
 import { validationParams } from "../utils/parameterValidator";
