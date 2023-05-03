@@ -8,7 +8,7 @@ class CertificateService {
 
   static async getCertificate({ userId }) {
     // 해당 id를 가진 데이터가 db에 존재 여부 확인
-    const certificate = await Certificate.findById({ userId });
+    const certificate = await Certificate.findByUserId({ userId });
     if (!certificate) {
       const errorMessage =
         "해당 id를 가진 자격증 데이터는 없습니다. 다시 한 번 확인해 주세요.";
@@ -19,7 +19,7 @@ class CertificateService {
   }
 
   static async updateCertificate({ _id, userId, toUpdate }) {
-    const certificate = await Certificate.findById({ _id });
+    const certificate = await Certificate.findById({ userId });
 
     if (!certificate) {
       return { errorMessage: "Certificate not found." };

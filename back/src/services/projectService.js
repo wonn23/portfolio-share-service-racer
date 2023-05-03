@@ -5,7 +5,7 @@ class projectService {
     return await Project.createProject({ newProject });
   }
   static async getProject({ userId }) {
-    const project = await Project.findAll({ userId });
+    const project = await Project.findByUserId({ userId });
     if (!project) {
       const errorMessage = "해당 데이터는 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
@@ -14,7 +14,7 @@ class projectService {
   }
 
   static async updateProject({ _id, userId, toUpdate }) {
-    const project = await Project.findById({ _id });
+    const project = await Project.findById({ userId });
 
     if (!project) {
       return { errorMessage: "Project not found." };
