@@ -28,16 +28,18 @@ certificateRouter.post("/create", async function (req, res, next) {
       });
       return;
     }
-    const { title, description } = req.body; // userId 오브젝트 아이디 아님
+    const { agency, credit, grade, acquireDate } = req.body; // userId 오브젝트 아이디 아님
     const user_id = req.currentUserId;
 
     const user = await userAuthService.getUserInfo({ user_id });
 
     console.log(`user Service : ${user._id}`);
     const newCertificate = new CertificateModel({
-      user: user._id,
-      title: title,
-      description: description,
+      userId: user._id,
+      agency: agency,
+      credit: credit,
+      grade: grade,
+      acquireDate: acquireDate,
     });
 
     const created = await certificateService.createCertificate({
@@ -90,13 +92,13 @@ certificateRouter.put("/:_id", async function (req, res, next) {
   try {
     const { _id } = req.params;
     // body data 로부터 업데이트할 사용자 정보를 추출함.
-    const { userId, title, description } = req.body ?? null;
+    const { userId, agency, credit, grade, acquireDate } = req.body ?? null;
 
     if (!userId) {
       throw new Error("해당 유저 아이디가 없습니다. 다시 확인해 주세요.");
     }
 
-    const toUpdate = { title, description };
+    const toUpdate = { agency, credit, grade, acquireDate };
 
     // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
     const updateCertificate = await certificateService.updateCertificate({

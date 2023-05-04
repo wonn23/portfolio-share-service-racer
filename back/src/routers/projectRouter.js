@@ -19,7 +19,14 @@ projectRouter.post("/create", async (req, res, next) => {
       });
       return;
     }
-    const { title, description, role, detail, url, projectdate } = req.body;
+    const {
+      projectName,
+      projectLink,
+      introduction,
+      startDate,
+      myRole,
+      detail,
+    } = req.body;
     const user_id = req.currentUserId;
 
     const user = await userAuthService.getUserInfo({ user_id });
@@ -27,12 +34,12 @@ projectRouter.post("/create", async (req, res, next) => {
     console.log(`user Service : ${user._id}`);
     const newProject = new ProjectModel({
       userId: user._id,
-      title: title,
-      description: description,
-      role: role,
+      projectName: projectName,
+      projectLink: projectLink,
+      introduction: introduction,
+      startDate: startDate,
+      myRole: myRole,
       detail: detail,
-      projectdate: projectdate,
-      url: url,
     });
 
     const created = await projectService.createProject({ newProject });
@@ -65,13 +72,28 @@ projectRouter.put("/:_id", async function (req, res, next) {
   try {
     const { _id } = req.params;
     // body data 로부터 업데이트할 사용자 정보를 추출함.
-    const { userId, title, description } = req.body ?? null;
+    const {
+      userId,
+      projectName,
+      projectLink,
+      introduction,
+      startDate,
+      myRole,
+      detail,
+    } = req.body ?? null;
 
     if (!userId) {
       throw new Error("해당 유저 아이디가 없습니다. 다시 확인해 주세요.");
     }
 
-    const toUpdate = { title, description };
+    const toUpdate = {
+      projectName,
+      projectLink,
+      introduction,
+      startDate,
+      myRole,
+      detail,
+    };
 
     // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
     const updateProject = await projectService.updateProject({
