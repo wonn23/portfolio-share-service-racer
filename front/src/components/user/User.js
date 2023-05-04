@@ -18,42 +18,28 @@ const User = ({ portfolioOwnerId, isEditable }) => {
     }),
   );
   const [isEditing, setIsEditing] = useState(false);
-  const [user, setUser] = useState(null);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     dispatch(getUser(portfolioOwnerId));
   }, [dispatch, portfolioOwnerId]);
 
-  useEffect(() => {
-    if (fetchError) {
-      setError('유저 정보 획득 실패');
-    }
-  }, [fetchError]);
-
-  useEffect(() => {
-    if (fetchUser) {
-      setUser(fetchUser);
-    }
-  }, [fetchUser]);
-
   if (loading) {
     return 'loading...';
   }
 
-  if (error) {
+  if (fetchError) {
     return <ErrorMessage>User컴포넌트 에러 발생</ErrorMessage>;
   }
 
   if (isEditing) {
-    return <UserEditForm user={user} setIsEditing={setIsEditing} />;
+    return <UserEditForm user={fetchUser} setIsEditing={setIsEditing} />;
   }
 
   return (
     <div>
       {!loading && (
         <UserCard
-          user={user}
+          user={fetchUser}
           setIsEditing={setIsEditing}
           isEditable={isEditable}
         />

@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { handleActions } from 'redux-actions';
 import { produce } from 'immer';
 
@@ -8,6 +9,8 @@ import {
   ADD_EDUCATION_FAILURE,
   UPDATE_EDUCATION_SUCCESS,
   UPDATE_EDUCATION_FAILURE,
+  DELETE_EDUCATION_SUCCESS,
+  DELETE_EDUCATION_FAILURE,
 } from 'modules/sagas/education';
 
 const initialState = {
@@ -15,14 +18,14 @@ const initialState = {
   loadEducationError: null,
   addEducationError: null,
   updateEducationError: null,
+  deleteEducationError: null,
 };
 
 const education = handleActions(
   {
     [LOAD_EDUCATION_SUCCESS]: (state, action) =>
       produce(state, (draft) => {
-        // draft.datas = action.payload.concat(draft.datas);
-        draft.datas = draft.datas.concat(action.payload);
+        draft.datas = action.payload;
       }),
     [LOAD_EDUCATION_FAILURE]: (state, action) =>
       produce(state, (draft) => {
@@ -39,7 +42,7 @@ const education = handleActions(
     [UPDATE_EDUCATION_SUCCESS]: (state, action) =>
       produce(state, (draft) => {
         const data = draft.datas.find(
-          (value) => value.id === action.payload.id,
+          (value) => value._id === action.payload._id,
         );
         data.school = action.payload.school;
         data.major = action.payload.major;
@@ -48,6 +51,17 @@ const education = handleActions(
     [UPDATE_EDUCATION_FAILURE]: (state, action) =>
       produce(state, (draft) => {
         draft.updateEducationError = action.payload;
+      }),
+    [DELETE_EDUCATION_SUCCESS]: (state, action) =>
+      produce(state, (draft) => {
+        draft.datas = draft.datas.filter(
+          (data) => data._id !== action.payload.educationId,
+        );
+        draft.deleteEducationError = null;
+      }),
+    [DELETE_EDUCATION_FAILURE]: (state, action) =>
+      produce(state, (draft) => {
+        draft.deleteEducationError = action.payload;
       }),
   },
   initialState,

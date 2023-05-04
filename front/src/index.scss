@@ -1,0 +1,44 @@
+// Custom.scss
+// Option A: Include all of Bootstrap
+
+// Include any default variable overrides here (though functions won't be available)
+
+// @import '../node_modules/bootstrap/scss/bootstrap.scss';
+// @import '../node_modules/bootstrap/scss/variables';
+// @import '../node_modules/bootstrap/scss/mixins';
+// @import '../node_modules/bootstrap/scss/root';
+
+// // Then add additional custom code here
+// $custom: linear-gradient(to right, #1c7ed6, #7950f2);
+// $gradient: linear-gradient(180deg, rgba($white, 0.15), rgba($white, 0));
+// $theme-colors: (
+//   'info': #212529,
+// );
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  box-sizing: border-box;
+  min-height: 100%;
+}
+
+html {
+  height: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: inherit;
+}
+
+code {
+  font-family: source-code-pro, 'Courier New', monospace;
+}

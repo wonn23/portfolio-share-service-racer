@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-shadow */
 import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -10,8 +9,11 @@ import styled from 'styled-components';
 import User from './user/User';
 import Education from './education/Education';
 import Award from './award/Award';
-import Project from './project/Project';
 import Certificate from './certificate/Certificate';
+import Project from './project/Project';
+import Music from './music/Music';
+import MusicPanel from './musicPanel/MusicPanel';
+import BackgroundCover from './BackgroundCover';
 
 const Portfolio = () => {
   const navigate = useNavigate();
@@ -33,13 +35,8 @@ const Portfolio = () => {
       return;
     }
 
-    if (params.userId) {
-      const ownerId = params.userId;
-      dispatch(getUser(ownerId));
-    } else {
-      const ownerId = user.id;
-      dispatch(getUser(ownerId));
-    }
+    const ownerId = params.userId || user.id;
+    dispatch(getUser(ownerId));
   }, [user, navigate, params.userId, dispatch]);
 
   if (loading) {
@@ -52,6 +49,7 @@ const Portfolio = () => {
 
   return (
     <div>
+      <BackgroundCover />
       {!loading && fetchUser && user && (
         <Container fluid>
           <Row>
@@ -60,6 +58,7 @@ const Portfolio = () => {
                 portfolioOwnerId={fetchUser.id}
                 isEditable={fetchUser.id === user?.id}
               />
+              <Music portfolioOwnerId={fetchUser.id} />
             </Col>
             <Col col="9">
               <Education
@@ -70,11 +69,15 @@ const Portfolio = () => {
                 portfolioOwnerId={fetchUser.id}
                 isEditable={fetchUser.id === user?.id}
               />
+              <Certificate
+                portfolioOwnerId={fetchUser.id}
+                isEditable={fetchUser.id === user?.id}
+              />
               <Project
                 portfolioOwnerId={fetchUser.id}
                 isEditable={fetchUser.id === user?.id}
               />
-              <Certificate
+              <MusicPanel
                 portfolioOwnerId={fetchUser.id}
                 isEditable={fetchUser.id === user?.id}
               />

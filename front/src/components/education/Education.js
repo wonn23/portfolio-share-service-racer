@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-shadow */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
@@ -19,6 +20,7 @@ const Education = ({ isEditable, portfolioOwnerId }) => {
       educationDatas: education.datas,
       error: education.loadEducationError,
       loading: loading['education/LOAD_EDUCATION'],
+      updateError: education.updateError,
     }),
   );
 
@@ -29,11 +31,6 @@ const Education = ({ isEditable, portfolioOwnerId }) => {
   };
 
   useEffect(() => {
-    // 백앤드와 협의
-    // Read API Dispatch [GET 타입]
-    // portfolioOwnerId 필요함.
-    // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
-
     dispatch(loadEducation(portfolioOwnerId));
   }, [dispatch, portfolioOwnerId]);
 
@@ -42,7 +39,7 @@ const Education = ({ isEditable, portfolioOwnerId }) => {
   }
 
   if (error) {
-    return 'LOAD ERROR';
+    return `${error.message}`;
   }
 
   return (
@@ -54,15 +51,13 @@ const Education = ({ isEditable, portfolioOwnerId }) => {
               학력
             </Card.Title>
             <Card.Text>
-              {educationDatas
-                ?.filter((data) => data.userId === portfolioOwnerId)
-                .map((data) => (
-                  <EducationView
-                    key={data.id}
-                    educationData={data}
-                    isEditable={isEditable}
-                  />
-                ))}
+              {educationDatas?.map((data) => (
+                <EducationView
+                  key={data._id}
+                  educationData={data}
+                  isEditable={isEditable}
+                />
+              ))}
             </Card.Text>
 
             <ButtonWrapper>

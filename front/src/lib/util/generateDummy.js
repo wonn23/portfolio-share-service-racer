@@ -24,6 +24,16 @@ export const generateDummyAward = (num,userId)=>Array(num).fill().map(()=>({
 }));
 
 // prettier-ignore
+export const generateDummyCertificate = (num,userId)=>Array(num).fill().map(()=>({
+  userId,
+  id:shortId.generate(),
+  agency: faker.helpers.arrayElement(['한국산업인력공단','한국관광공사','서울지방경찰청']),
+  credit: faker.helpers.arrayElement(['정보처리자격증','운전면허증']),
+  grade: faker.helpers.arrayElement(['기능사', '기술사','기사','산업기사','1종보통','2종보통']),
+  acquireDate: faker.date.birthdate(),
+}));
+
+// prettier-ignore
 export const generateDummyProject = (num,userId)=>Array(num).fill().map(()=>({
   userId,
   id:shortId.generate(),
@@ -33,14 +43,4 @@ export const generateDummyProject = (num,userId)=>Array(num).fill().map(()=>({
   startDate: faker.date.birthdate(),
   myRole : faker.word(),
   detail: faker.word(),
-}));
-
-// prettier-ignore
-export const generateDummyCertificate = (num,userId)=>Array(num).fill().map(()=>({
-  userId,
-  id:shortId.generate(),
-  certificateName: faker.helpers.arrayElement(['정보처리기사','전기기사']),
-  issueAgency: faker.helpers.arrayElement(['한국산업인력공단','한국관광공사']),
-  grade: faker.word(),
-  acquisitionDate: faker.date.birthdate(),
 }));

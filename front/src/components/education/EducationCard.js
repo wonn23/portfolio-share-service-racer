@@ -1,12 +1,20 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 import React from 'react';
 import { Badge, Button, Container, Col, Row } from 'react-bootstrap';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { deleteEducation } from 'modules/sagas/education';
 
 const EducationCard = ({ educationData, isEditable, setIsEditing }) => {
+  const dispatch = useDispatch();
   const onClick = () => {
     setIsEditing(true);
+  };
+
+  const onClickDelete = () => {
+    dispatch(deleteEducation(educationData._id));
   };
 
   return (
@@ -38,9 +46,18 @@ const EducationCard = ({ educationData, isEditable, setIsEditing }) => {
         </Col>
         <Col sm="2">
           {isEditable && (
-            <Button variant="outline-primary" size="sm" onClick={onClick}>
-              편집
-            </Button>
+            <ButtonWrapper>
+              <Button variant="outline-primary" size="sm" onClick={onClick}>
+                편집
+              </Button>
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={onClickDelete}
+              >
+                삭제
+              </Button>
+            </ButtonWrapper>
           )}
         </Col>
       </Row>
@@ -60,4 +77,9 @@ const RowWrapper = styled(Row)`
 
   padding: 12px 0 0 12px;
   width: 100%;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
 `;

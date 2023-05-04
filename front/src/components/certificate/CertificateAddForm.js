@@ -2,7 +2,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import { Button, Form, FloatingLabel } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import useInput from 'hooks/useInput';
 import DatePicker from 'react-datepicker';
@@ -13,10 +13,10 @@ import { useDispatch } from 'react-redux';
 const CertificateAddForm = ({ setVisible, portfolioOwnerId }) => {
   const dispatch = useDispatch();
 
-  const [certificateName, onChangeCertificateName] = useInput('');
-  const [issueAgency, onChangeIssueAgency] = useInput('');
+  const [agency, onChangeAgency] = useInput('');
+  const [credit, onChangeCredit] = useInput('');
   const [grade, onChangeGrade] = useInput('');
-  const [acquisitionDate, onChangeAcquisitionDate] = useState(new Date());
+  const [acquireDate, onChangeAcquireDate] = useState(new Date());
 
   const onClick = () => {
     setVisible(false);
@@ -25,62 +25,54 @@ const CertificateAddForm = ({ setVisible, portfolioOwnerId }) => {
     e.preventDefault();
     const newCertificateData = {
       userId: portfolioOwnerId,
-      certificateName,
-      issueAgency,
+      agency,
+      credit,
       grade,
-      acquisitionDate,
+      acquireDate,
     };
-
-    // // 백앤드와 협의
-    // // CREATE API Dispatch [POST 타입]
-    // // portfolioOwnerId 필요함
-    // // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
     dispatch(addCertificate(newCertificateData));
-
-    // console.log(association, contest, startDate, prize, detail);
-
     setVisible(false);
   };
 
   return (
     <Form
       onSubmit={onSubmitForm}
-      controlid="formEducation"
+      controlid="formCertificate"
       style={{ marginLeft: '0px' }}
     >
-      <Form.Group controlid="formSchool" style={{ marginBottom: '12px' }}>
+      <Form.Group controlid="formAgency" style={{ marginBottom: '12px' }}>
         <Form.Control
           type="text"
-          placeholder="자격명을 입력해주세요."
-          value={certificateName}
-          onChange={onChangeCertificateName}
+          placeholder="발급기관 입력해 주세요."
+          value={agency}
+          onChange={onChangeAgency}
         />
       </Form.Group>
 
-      <Form.Group controlid="formContest" style={{ marginBottom: '12px' }}>
+      <Form.Group controlid="formCredit" style={{ marginBottom: '12px' }}>
         <Form.Control
           type="text"
-          placeholder="발급처를 입력해주세요."
-          value={issueAgency}
-          onChange={onChangeIssueAgency}
+          placeholder="자격증명을 입력해 주세요."
+          value={credit}
+          onChange={onChangeCredit}
         />
       </Form.Group>
 
-      <Form.Group controlid="formContest" style={{ marginBottom: '12px' }}>
+      <Form.Group controlid="formGrade" style={{ marginBottom: '12px' }}>
         <Form.Control
           type="text"
-          placeholder="등급 혹은 점수를 입력해주세요."
+          placeholder="등급 및 점수를 입력해 주세요."
           value={grade}
           onChange={onChangeGrade}
         />
       </Form.Group>
 
-      <Form.Group controlid="formDate" style={{ marginBottom: '12px' }}>
+      <Form.Group controlid="formAquireDate" style={{ marginBottom: '12px' }}>
         <DatePicker
           dateFormat="yyyy년 MM월 dd일"
           dateFormatCalendar="yyyy년 MM월"
-          selected={acquisitionDate}
-          onChange={(date) => onChangeAcquisitionDate(date)}
+          selected={acquireDate}
+          onChange={(date) => onChangeAcquireDate(date)}
           withPortal
         />
       </Form.Group>
