@@ -34,14 +34,7 @@ const ProjectAddForm = ({ setVisible, portfolioOwnerId }) => {
       myRole,
       detail,
     };
-
-    // // 백앤드와 협의
-    // // CREATE API Dispatch [POST 타입]
-    // // portfolioOwnerId 필요함
-    // // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
     dispatch(addProject(newProjectData));
-
-    // console.log(association, contest, startDate, prize, detail);
 
     setVisible(false);
   };
@@ -52,7 +45,7 @@ const ProjectAddForm = ({ setVisible, portfolioOwnerId }) => {
       controlid="formEducation"
       style={{ marginLeft: '0px' }}
     >
-      <Form.Group controlid="formSchool" style={{ marginBottom: '12px' }}>
+      <Form.Group controlid="formProjectName" style={{ marginBottom: '12px' }}>
         <Form.Control
           type="text"
           placeholder="프로젝트 이름을 입력해 주세요."
@@ -61,7 +54,7 @@ const ProjectAddForm = ({ setVisible, portfolioOwnerId }) => {
         />
       </Form.Group>
 
-      <Form.Group controlid="formContest" style={{ marginBottom: '12px' }}>
+      <Form.Group controlid="formLink" style={{ marginBottom: '12px' }}>
         <Form.Control
           type="text"
           placeholder="링크를 입력해 주세요."
@@ -70,7 +63,7 @@ const ProjectAddForm = ({ setVisible, portfolioOwnerId }) => {
         />
       </Form.Group>
 
-      <Form.Group controlid="formContest" style={{ marginBottom: '12px' }}>
+      <Form.Group controlid="formIntroduction" style={{ marginBottom: '12px' }}>
         <Form.Control
           type="text"
           placeholder="프로젝트 소개 내용을 입력해주세요."
@@ -79,7 +72,7 @@ const ProjectAddForm = ({ setVisible, portfolioOwnerId }) => {
         />
       </Form.Group>
 
-      <Form.Group controlid="formDate" style={{ marginBottom: '12px' }}>
+      <Form.Group controlid="formProjectStartDate" style={{ marginBottom: '12px' }}>
         <DatePicker
           dateFormat="yyyy년 MM월 dd일"
           dateFormatCalendar="yyyy년 MM월"
@@ -89,7 +82,7 @@ const ProjectAddForm = ({ setVisible, portfolioOwnerId }) => {
         />
       </Form.Group>
 
-      <Form.Group controlid="formPrize" style={{ marginBottom: '12px' }}>
+      <Form.Group controlid="formMyRole" style={{ marginBottom: '12px' }}>
         <Form.Control
           type="text"
           placeholder="나의 역할을 입력해 주세요."
@@ -99,7 +92,7 @@ const ProjectAddForm = ({ setVisible, portfolioOwnerId }) => {
       </Form.Group>
 
       <FloatingLabel
-        controlId="floatingTextarea"
+        controlId="ProjectDetail"
         label="상세 설명을 입력해 주세요."
         className="mb-3"
       >

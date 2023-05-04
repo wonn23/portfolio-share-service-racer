@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import Modals from 'components/common/Modals';
 import DatePicker from 'react-datepicker';
 import { updateProject } from 'modules/sagas/project';
+import moment from 'moment-timezone';
 
 const ProjectEditForm = ({ projectData, setIsEditing }) => {
   const [modalShow, setModalShow] = useState(false);
@@ -16,8 +17,12 @@ const ProjectEditForm = ({ projectData, setIsEditing }) => {
 
   const [projectName, onChangeProjectName] = useInput(projectData.projectName);
   const [projectLink, onChangeProjectLink] = useInput(projectData.projectLink);
-  const [introduction, onChangeIntroduction] = useInput(projectData.introduction);
-  const [startDate, onChangeStartDate] = useState(projectData.startDate);
+  const [introduction, onChangeIntroduction] = useInput(
+    projectData.introduction,
+  );
+  const [startDate, onChangeStartDate] = useState(
+    moment(projectData.startDate).tz('Asia/Seoul'),
+  );
   const [myRole, onChangeMyRole] = useInput(projectData.myRole);
   const [detail, onChangeDetail] = useInput(projectData.detail);
 
@@ -28,9 +33,9 @@ const ProjectEditForm = ({ projectData, setIsEditing }) => {
 
   useEffect(() => {
     if (isConfirmed) {
-      const { id } = projectData;
+      const { _id } = projectData;
       const updatedProjectData = {
-        id,
+        _id,
         projectName,
         projectLink,
         introduction,
@@ -38,11 +43,6 @@ const ProjectEditForm = ({ projectData, setIsEditing }) => {
         myRole,
         detail,
       };
-
-      // 백앤드와 협의
-      // Update API Dispatch [PATCH, PUT 타입]
-      // educationDataID 필요함
-      // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
 
       dispatch(updateProject(updatedProjectData));
       console.log(updatedProjectData);
@@ -103,9 +103,10 @@ const ProjectEditForm = ({ projectData, setIsEditing }) => {
 
         <Form.Group controlid="formDate" style={{ marginBottom: '12px' }}>
           <DatePicker
-            selected={startDate}
-            placeholder="프로젝트 기간을 입력해주세요."
-            onChange={(date) => onChangeStartDate(date)}
+            selected={startDate.toDate()}
+            onChange={(date) =>
+              onChangeStartDate(moment(date).tz('Asia/Seoul'))
+            }
             withPortal
           />
         </Form.Group>

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import { Button, Form, FloatingLabel } from 'react-bootstrap';
@@ -7,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import Modals from 'components/common/Modals';
 import DatePicker from 'react-datepicker';
 import { updateAward } from 'modules/sagas/award';
+import moment from 'moment-timezone';
 
 const AwardEditForm = ({ awardData, setIsEditing }) => {
   const [modalShow, setModalShow] = useState(false);
@@ -15,7 +17,9 @@ const AwardEditForm = ({ awardData, setIsEditing }) => {
 
   const [association, onChangeAssociation] = useInput(awardData.association);
   const [contest, onChangeContest] = useInput(awardData.contest);
-  const [startDate, onChangeStartDate] = useState(awardData.startDate);
+  const [startDate, onChangeStartDate] = useState(
+    moment(awardData.startDate).tz('Asia/Seoul'),
+  );
   const [prize, onChangePrize] = useInput(awardData.prize);
   const [detail, onChangeDetail] = useInput(awardData.detail);
 
@@ -26,20 +30,15 @@ const AwardEditForm = ({ awardData, setIsEditing }) => {
 
   useEffect(() => {
     if (isConfirmed) {
-      const { id } = awardData;
+      const { _id } = awardData;
       const updatedAwardData = {
-        id,
+        _id,
         association,
         contest,
         startDate,
         prize,
         detail,
       };
-
-      // 백앤드와 협의
-      // Update API Dispatch [PATCH, PUT 타입]
-      // educationDataID 필요함
-      // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
 
       dispatch(updateAward(updatedAwardData));
       console.log(updatedAwardData);
@@ -70,7 +69,10 @@ const AwardEditForm = ({ awardData, setIsEditing }) => {
         controlid="formEducation"
         style={{ marginLeft: '0px' }}
       >
-        <Form.Group controlid="formSchool" style={{ marginBottom: '12px' }}>
+        <Form.Group
+          controlid="formAssociation"
+          style={{ marginBottom: '12px' }}
+        >
           <Form.Control
             type="text"
             placeholder="기관 이름을 입력해 주세요."
@@ -88,10 +90,12 @@ const AwardEditForm = ({ awardData, setIsEditing }) => {
           />
         </Form.Group>
 
-        <Form.Group controlid="formDate" style={{ marginBottom: '12px' }}>
+        <Form.Group controlid="formStartDate" style={{ marginBottom: '12px' }}>
           <DatePicker
-            selected={startDate}
-            onChange={(date) => onChangeStartDate(date)}
+            selected={startDate.toDate()}
+            onChange={(date) =>
+              onChangeStartDate(moment(date).tz('Asia/Seoul'))
+            }
             withPortal
           />
         </Form.Group>

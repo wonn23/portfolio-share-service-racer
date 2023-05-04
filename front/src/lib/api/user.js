@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable no-unused-vars */
 /* eslint-disable import/prefer-default-export */
 import * as API from './api';
 
@@ -19,50 +17,129 @@ export const getCurrentUser = () => API.get('user/current');
 export const updateUser = ({ id, name, email, description }) =>
   API.put(`users/${id}`, { name, email, description });
 
+// education API
+export const getEducations = (portfolioOwnerId) =>
+  API.get('education', portfolioOwnerId);
+
+export const addEducation = ({ userId, school, major, status }) =>
+  API.post('education', { userId, school, major, status });
+
+export const updateEducation = ({ _id, school, major, status }) =>
+  API.put(`education/${_id}`, { school, major, status });
+
+export const deleteEducation = (_id) => API.del(`education/${_id}`);
+
 // award API
 export const getAwards = (portfolioOwnerId) =>
-  API.get('awards', portfolioOwnerId);
+  API.get('award', portfolioOwnerId);
 
-export const addAward = ({ association, contest, prize, detail, date }) =>
-  API.post('awards/', { association, contest, prize, detail, date });
-
-export const updateAward = ({
-  id,
+export const addAward = ({
+  userId,
   association,
   contest,
+  startDate,
   prize,
   detail,
-  date,
-}) => API.put(`awards/${id}`, { association, contest, prize, detail, date });
+}) =>
+  API.post('award', { userId, association, contest, startDate, prize, detail });
+
+export const updateAward = ({
+  _id,
+  association,
+  contest,
+  startDate,
+  prize,
+  detail,
+}) =>
+  API.put(`award/${_id}`, { association, contest, startDate, prize, detail });
+
+export const deleteAward = (_id) => API.del(`award/${_id}`);
+
+// certificate API
+export const getCertificates = (portfolioOwnerId) =>
+  API.get('certificate', portfolioOwnerId);
+
+export const addCertificate = ({
+  userId,
+  agency,
+  credit,
+  grade,
+  acquireDate,
+}) => API.post('certificate', { userId, agency, credit, grade, acquireDate });
+
+export const updateCertificate = ({
+  _id,
+  agency,
+  credit,
+  grade,
+  acquireDate,
+}) =>
+  API.put(`certificate/${_id}`, {
+    agency,
+    credit,
+    grade,
+    acquireDate,
+  });
+
+export const deleteCertificate = (_id) => API.del(`certificate/${_id}`);
 
 // project API
 export const getProjects = (portfolioOwnerId) =>
-  API.get('projects', portfolioOwnerId);
+  API.get('project', portfolioOwnerId);
 
-export const addProejct = ({ projectName, projectLink, introduction, startDate, myRole, detail }) =>
-  API.post('projects/', { projectName, projectLink, introduction, startDate, myRole, detail });
-
-export const updateProject = ({
-  id,
+export const addProject = ({
+  userId,
   projectName,
   projectLink,
   introduction,
   startDate,
   myRole,
   detail,
-}) => API.put(`projects/${id}`, { projectName, projectLink, introduction, startDate, myRole, detail });
+}) =>
+  API.post('project', {
+    userId,
+    projectName,
+    projectLink,
+    introduction,
+    startDate,
+    myRole,
+    detail,
+  });
 
-// certificate API
-export const getCertificates = (portfolioOwnerId) =>
-  API.get('certificates', portfolioOwnerId);
+export const updateProject = ({
+  _id,
+  projectName,
+  projectLink,
+  introduction,
+  startDate,
+  myRole,
+  detail,
+}) =>
+  API.put(`project/${_id}`, {
+    projectName,
+    projectLink,
+    introduction,
+    startDate,
+    myRole,
+    detail,
+  });
 
-export const addCertificate = ({ certificateName, issueAgency, grade, acqusitionDate }) =>
-  API.post('projects/', { certificateName, issueAgency, grade, acqusitionDate });
+export const deleteProject = (_id) => API.del(`project/${_id}`);
 
-export const updateCertificate = ({
-  id,
-  certificateName,
-  issueAgency,
-  grade,
-  acqusitionDate,
-}) => API.put(`certificates/${id}`, { certificateName, issueAgency, grade, acqusitionDate });
+// music API
+export const getMusicList = (portfolioOwnerId) =>
+  API.get('audio', portfolioOwnerId);
+export const getMusicCover = (coverID) => API.get('audio/cover', coverID);
+export const addMusicSong = (data) => {
+  const userId = data.get('userId');
+  const title = data.get('title');
+  const artist = data.get('artist');
+  const coverFile = data.get('coverFile');
+  const musicFile = data.get('musicFile');
+
+  return API.post(
+    `audio/${userId}`,
+    { userId, title, artist, coverFile, musicFile },
+    'Music',
+  );
+};

@@ -1,13 +1,12 @@
-/* eslint-disable import/named */
-/* eslint-disable no-undef */
 import { all, fork } from 'redux-saga/effects';
 import { authSaga } from './auth';
 import { userSaga } from './user';
 import { usersSaga } from './users';
 import { educationSaga } from './education';
 import { awardSaga } from './award';
+import { certificateSaga } from './certificate';
 import { projectSaga } from './project';
-import { certificate } from './certificate';
+import { musicsSaga } from './music';
 
 function* rootSaga() {
   yield all([
@@ -16,8 +15,9 @@ function* rootSaga() {
     fork(usersSaga),
     fork(educationSaga),
     fork(awardSaga),
-    fork(projectSaga),
     fork(certificateSaga),
+    fork(projectSaga),
+    fork(musicsSaga),
   ]);
 }
 

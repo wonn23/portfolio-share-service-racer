@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-shadow */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
@@ -30,10 +31,6 @@ const Project = ({ isEditable, portfolioOwnerId }) => {
   };
 
   useEffect(() => {
-    // 백앤드와 협의
-    // Read API Dispatch [GET 타입]
-    // portfolioOwnerId 필요함.
-    // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
     dispatch(loadProject(portfolioOwnerId));
   }, [dispatch, portfolioOwnerId]);
 
@@ -48,21 +45,19 @@ const Project = ({ isEditable, portfolioOwnerId }) => {
   return (
     <div>
       {!loading && (
-        <Card style={{ padding: '6px' }}>
+        <Card style={{ padding: '6px', marginBottom: '1.5rem' }}>
           <Card.Body>
             <Card.Title style={{ fontSize: '1.5rem', fontWeight: '500' }}>
               포트폴리오
             </Card.Title>
             <Card.Text>
-              {projectDatas
-                ?.filter((data) => data.userId === portfolioOwnerId)
-                .map((data) => (
-                  <ProjectView
-                    key={data.id}
-                    projectData={data}
-                    isEditable={isEditable}
-                  />
-                ))}
+              {projectDatas?.map((data) => (
+                <ProjectView
+                  key={data._id}
+                  projectData={data}
+                  isEditable={isEditable}
+                />
+              ))}
             </Card.Text>
 
             <ButtonWrapper>

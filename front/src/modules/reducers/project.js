@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { handleActions } from 'redux-actions';
 import { produce } from 'immer';
 
@@ -8,6 +9,8 @@ import {
   ADD_PROJECT_FAILURE,
   UPDATE_PROJECT_SUCCESS,
   UPDATE_PROJECT_FAILURE,
+  DELETE_PROJECT_SUCCESS,
+  DELETE_PROJECT_FAILURE,
 } from 'modules/sagas/project';
 
 const initialState = {
@@ -15,13 +18,14 @@ const initialState = {
   loadProjectError: null,
   addProjectError: null,
   updateProjectError: null,
+  deleteProjectError: null,
 };
 
 const project = handleActions(
   {
     [LOAD_PROJECT_SUCCESS]: (state, action) =>
       produce(state, (draft) => {
-        draft.datas = draft.datas.concat(action.payload);
+        draft.datas = action.payload;
       }),
     [LOAD_PROJECT_FAILURE]: (state, action) =>
       produce(state, (draft) => {
@@ -38,7 +42,7 @@ const project = handleActions(
     [UPDATE_PROJECT_SUCCESS]: (state, action) =>
       produce(state, (draft) => {
         const data = draft.datas.find(
-          (value) => value.id === action.payload.id,
+          (value) => value._id === action.payload._id,
         );
         data.projectName = action.payload.projectName;
         data.projectLink = action.payload.projectLink;
@@ -50,6 +54,17 @@ const project = handleActions(
     [UPDATE_PROJECT_FAILURE]: (state, action) =>
       produce(state, (draft) => {
         draft.updateProjectError = action.payload;
+      }),
+    [DELETE_PROJECT_SUCCESS]: (state, action) =>
+      produce(state, (draft) => {
+        draft.datas = draft.datas.filter(
+          (data) => data._id !== action.payload.projectId,
+        );
+        draft.deleteProjectError = null;
+      }),
+    [DELETE_PROJECT_FAILURE]: (state, action) =>
+      produce(state, (draft) => {
+        draft.deleteProjectError = action.payload;
       }),
   },
   initialState,

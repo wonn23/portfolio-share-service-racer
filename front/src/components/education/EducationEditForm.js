@@ -23,17 +23,9 @@ const EducationEditForm = ({ educationData, setIsEditing }) => {
 
   useEffect(() => {
     if (isConfirmed) {
-      const { id } = educationData;
-      const updatedEducationData = { id, school, major, status };
-
-      // 백앤드와 협의
-      // Update API Dispatch [PATCH, PUT 타입]
-      // educationDataID 필요함
-      // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
-
+      const { _id } = educationData;
+      const updatedEducationData = { _id, school, major, status };
       dispatch(updateEducation(updatedEducationData));
-      console.log(updatedEducationData);
-
       setIsEditing(false);
     }
   }, [

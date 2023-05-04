@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-shadow */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
@@ -30,10 +31,6 @@ const Certificate = ({ isEditable, portfolioOwnerId }) => {
   };
 
   useEffect(() => {
-    // 백앤드와 협의
-    // Read API Dispatch [GET 타입]
-    // portfolioOwnerId 필요함.
-    // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
     dispatch(loadCertificate(portfolioOwnerId));
   }, [dispatch, portfolioOwnerId]);
 
@@ -48,21 +45,19 @@ const Certificate = ({ isEditable, portfolioOwnerId }) => {
   return (
     <div>
       {!loading && (
-        <Card style={{ padding: '6px' }}>
+        <Card style={{ padding: '6px', marginBottom: '1.5rem' }}>
           <Card.Body>
             <Card.Title style={{ fontSize: '1.5rem', fontWeight: '500' }}>
-              자격증
+              자격증 내역
             </Card.Title>
             <Card.Text>
-              {certificateDatas
-                ?.filter((data) => data.userId === portfolioOwnerId)
-                .map((data) => (
-                  <CertificateView
-                    key={data.id}
-                    certificateData={data}
-                    isEditable={isEditable}
-                  />
-                ))}
+              {certificateDatas?.map((data) => (
+                <CertificateView
+                  key={data._id}
+                  certificateData={data}
+                  isEditable={isEditable}
+                />
+              ))}
             </Card.Text>
 
             <ButtonWrapper>

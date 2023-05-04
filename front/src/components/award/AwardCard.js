@@ -1,17 +1,24 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button, Container, Col, Row } from 'react-bootstrap';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { deleteAward } from 'modules/sagas/award';
+import moment from 'moment-timezone';
+import toDateString from 'lib/util/toDate';
 
 const AwardCard = ({ awardData, isEditable, setIsEditing }) => {
+  const dispatch = useDispatch();
   const onClick = () => {
     setIsEditing(true);
   };
 
-  useEffect(() => {
-    console.log(awardData);
-  }, [awardData]);
+  const onClickDelete = () => {
+    dispatch(deleteAward(awardData._id));
+  };
 
   return (
     <Container style={{ margin: '12px 0px' }}>
@@ -38,7 +45,7 @@ const AwardCard = ({ awardData, isEditable, setIsEditing }) => {
               수상 일자 |
             </Col>
             <Col sm="auto" style={{ padding: '0 0 0 4px', margin: '0' }}>
-              {awardData.startDate.toLocaleDateString('ko-KR')}
+              {`${toDateString(moment(awardData.startDate).tz('Asia/Seoul'))}`}
             </Col>
           </Row>
           <Row>
@@ -62,9 +69,18 @@ const AwardCard = ({ awardData, isEditable, setIsEditing }) => {
         </Col>
         <Col sm="2">
           {isEditable && (
-            <Button variant="outline-primary" size="sm" onClick={onClick}>
-              편집
-            </Button>
+            <ButtonWrapper>
+              <Button variant="outline-primary" size="sm" onClick={onClick}>
+                편집
+              </Button>
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={onClickDelete}
+              >
+                삭제
+              </Button>
+            </ButtonWrapper>
           )}
         </Col>
       </Row>
@@ -84,4 +100,9 @@ const RowWrapper = styled(Row)`
 
   padding: 12px 0 0 12px;
   width: 100%;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
 `;

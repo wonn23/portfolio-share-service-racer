@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 import React from 'react';
@@ -7,6 +8,9 @@ import useInput from 'hooks/useInput';
 
 import { useDispatch } from 'react-redux';
 import { addEducation } from 'modules/sagas/education';
+
+// 컴포넌트 밖에 선언된 상수 배열
+const statusList = ['재학중', '학사졸업', '석사졸업', '박사졸업'];
 
 const EducationAddForm = ({ setVisible, portfolioOwnerId }) => {
   const dispatch = useDispatch();
@@ -26,13 +30,7 @@ const EducationAddForm = ({ setVisible, portfolioOwnerId }) => {
       major,
       status,
     };
-
-    // 백앤드와 협의
-    // CREATE API Dispatch [POST 타입]
-    // portfolioOwnerId 필요함
-    // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
     dispatch(addEducation(newEducationData));
-
     setVisible(false);
   };
 
@@ -61,45 +59,17 @@ const EducationAddForm = ({ setVisible, portfolioOwnerId }) => {
       </Form.Group>
 
       <Form.Group controlid="formStatus" style={{ marginBottom: '8px' }}>
-        {['radio'].map((type) => (
-          <div key={`inline-${type}`} className="mb-3">
-            <Form.Check
-              inline
-              label="재학중"
-              name="group1"
-              type={type}
-              value="재학중"
-              id={`inline-${type}-1`}
-              onChange={onChangeStatus}
-            />
-            <Form.Check
-              inline
-              label="학사졸업"
-              name="group1"
-              type={type}
-              value="학사졸업"
-              id={`inline-${type}-2`}
-              onChange={onChangeStatus}
-            />
-            <Form.Check
-              inline
-              label="석사졸업"
-              name="group1"
-              type={type}
-              value="석사졸업"
-              id={`inline-${type}-3`}
-              onChange={onChangeStatus}
-            />
-            <Form.Check
-              inline
-              label="박사졸업"
-              name="group1"
-              type={type}
-              value="박사졸업"
-              id={`inline-${type}-4`}
-              onChange={onChangeStatus}
-            />
-          </div>
+        {statusList.map((status) => (
+          <Form.Check
+            key={status}
+            inline
+            label={status}
+            name="group1"
+            type="radio"
+            value={status}
+            id={`inline-${status}`}
+            onChange={onChangeStatus}
+          />
         ))}
       </Form.Group>
 

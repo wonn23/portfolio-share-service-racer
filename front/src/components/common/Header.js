@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-shadow */
 import React from 'react';
 import Nav from 'react-bootstrap/Nav';
@@ -7,7 +8,9 @@ import { logout } from 'modules/reducers/user';
 import { initAuth } from 'modules/reducers/auth';
 import { initProfile } from 'modules/reducers/profile';
 
-const Header = () => {
+import Toggle from 'lib/theme/Toggle';
+
+const Header = ({ theme, toggleTheme }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,9 +28,16 @@ const Header = () => {
   };
 
   return (
-    <Nav activeKey={location.pathname}>
-      <Nav.Item className="me-auto mb-5">
-        <Nav.Link disabled>안녕하세요, 포트폴리오 공유 서비스입니다.</Nav.Link>
+    <Nav
+      activeKey={location.pathname}
+      style={{ padding: '1rem' }}
+      className="d-flex justify-content-center align-items-center"
+    >
+      <Nav.Item className="me-auto">
+        <div>안녕하세요, 포트폴리오 공유 서비스입니다</div>
+      </Nav.Item>
+      <Nav.Item>
+        <Toggle theme={theme} toggleTheme={toggleTheme} />
       </Nav.Item>
       <Nav.Item>
         <Nav.Link onClick={() => navigate('/')}>나의 페이지</Nav.Link>

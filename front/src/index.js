@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 
 import { Provider } from 'react-redux';
@@ -11,6 +10,7 @@ import Header from 'components/common/Header';
 import App from './App';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-datepicker/dist/react-datepicker.css';
+import './index.scss';
 
 const store = configureStore();
 
@@ -19,7 +19,6 @@ root.render(
   <Provider store={store}>
     <BrowserRouter>
       <HelmetProvider>
-        <Header />
         <App />
       </HelmetProvider>
     </BrowserRouter>

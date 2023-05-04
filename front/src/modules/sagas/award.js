@@ -5,6 +5,7 @@ import createType from 'lib/util/createType';
 // import createSaga from 'lib/util/createSaga';
 import createDummySaga from 'lib/util/createDummySaga';
 import { generateDummyAward } from 'lib/util/generateDummy';
+import createSaga from 'lib/util/createSaga';
 
 import * as awardAPI from '../../lib/api/user';
 
@@ -33,15 +34,20 @@ export const [
   UPDATE_AWARD_FAILURE,
 ] = createType('award/UPDATE_AWARD');
 
+export const [DELETE_AWARD, DELETE_AWARD_SUCCESS, DELETE_AWARD_FAILURE] =
+  createType('award/DELETE_AWARD');
+
 /* 2. 액션 객체 생성 함수 */
 export const loadAward = createAction(LOAD_AWARD, (id) => id);
 export const addAward = createAction(ADD_AWARD, (data) => data);
 export const updateAward = createAction(UPDATE_AWARD, (data) => data);
+export const deleteAward = createAction(DELETE_AWARD, (id) => id);
 
 /* 3. 사가 함수 */
-const loadAwardSaga = createDummySaga(LOAD_AWARD, generateDummyAward, 'LOAD');
-const addAwardSaga = createDummySaga(ADD_AWARD, null, 'ADD');
-const updateAwardSaga = createDummySaga(UPDATE_AWARD, null, 'UPDATE');
+const loadAwardSaga = createSaga(LOAD_AWARD, awardAPI.getAwards);
+const addAwardSaga = createSaga(ADD_AWARD, awardAPI.addAward);
+const updateAwardSaga = createSaga(UPDATE_AWARD, awardAPI.updateAward);
+const deleteAwardSaga = createSaga(DELETE_AWARD, awardAPI.deleteAward);
 
 /* 4. 와치 함수 */
 function* watchLoadAward() {
@@ -56,36 +62,15 @@ function* watchUpdateAward() {
   yield takeLatest(UPDATE_AWARD, updateAwardSaga);
 }
 
+function* watchDeleteAward() {
+  yield takeLatest(DELETE_AWARD, deleteAwardSaga);
+}
+
 export function* awardSaga() {
   yield all([
     fork(watchLoadAward),
     fork(watchAddAward),
     fork(watchUpdateAward),
+    fork(watchDeleteAward),
   ]);
 }
-
-// 실행 순서
-/**
- *  dispatch(loadAward(portfolioOwnerID))
- *
- *  어? LOAD_AWARD 액션이 발생했네?
- *  watchLoadAward()  감시를 하고 있다가
- *
- *  loadAwardSaga 함수를 실행
- *
- *  어? 근데 loadAwardSaga 가 뭐지?
- *
- *  3번에서 만든 사가 함수네?
- *
- *
- *  awardAPI.getAwards =>
- *  getAwards = (portfolioOwnerId) => API.get('awards', portfolioOwnerId);
- *
- *  createSaga(LOAD_AWARD, awardAPI.getAwards)
- *
- *  어떤 액션이 후속으로 자동으로 발생하느냐?
- *
- *  데이터를 정상적으로 받았다?
- *  LOAD_AWARD_SUCCESS 액션이 발생 자동
- *  action.payload 에는 서버에서 받은 데이터가 들어간다.
- */

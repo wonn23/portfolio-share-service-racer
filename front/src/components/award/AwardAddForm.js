@@ -32,15 +32,7 @@ const AwardAddForm = ({ setVisible, portfolioOwnerId }) => {
       prize,
       detail,
     };
-
-    // // 백앤드와 협의
-    // // CREATE API Dispatch [POST 타입]
-    // // portfolioOwnerId 필요함
-    // // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
     dispatch(addAward(newAwardData));
-
-    // console.log(association, contest, startDate, prize, detail);
-
     setVisible(false);
   };
 
@@ -50,7 +42,7 @@ const AwardAddForm = ({ setVisible, portfolioOwnerId }) => {
       controlid="formEducation"
       style={{ marginLeft: '0px' }}
     >
-      <Form.Group controlid="formSchool" style={{ marginBottom: '12px' }}>
+      <Form.Group controlid="formAssociation" style={{ marginBottom: '12px' }}>
         <Form.Control
           type="text"
           placeholder="기관 이름을 입력해 주세요."
@@ -68,7 +60,7 @@ const AwardAddForm = ({ setVisible, portfolioOwnerId }) => {
         />
       </Form.Group>
 
-      <Form.Group controlid="formDate" style={{ marginBottom: '12px' }}>
+      <Form.Group controlid="formStartDate" style={{ marginBottom: '12px' }}>
         <DatePicker
           dateFormat="yyyy년 MM월 dd일"
           dateFormatCalendar="yyyy년 MM월"

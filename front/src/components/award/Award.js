@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-shadow */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
@@ -30,10 +31,6 @@ const Award = ({ isEditable, portfolioOwnerId }) => {
   };
 
   useEffect(() => {
-    // 백앤드와 협의
-    // Read API Dispatch [GET 타입]
-    // portfolioOwnerId 필요함.
-    // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
     dispatch(loadAward(portfolioOwnerId));
   }, [dispatch, portfolioOwnerId]);
 
@@ -48,21 +45,19 @@ const Award = ({ isEditable, portfolioOwnerId }) => {
   return (
     <div>
       {!loading && (
-        <Card style={{ padding: '6px' }}>
+        <Card style={{ padding: '6px', marginBottom: '1.5rem' }}>
           <Card.Body>
             <Card.Title style={{ fontSize: '1.5rem', fontWeight: '500' }}>
               수상 이력
             </Card.Title>
             <Card.Text>
-              {awardDatas
-                ?.filter((data) => data.userId === portfolioOwnerId)
-                .map((data) => (
-                  <AwardView
-                    key={data.id}
-                    awardData={data}
-                    isEditable={isEditable}
-                  />
-                ))}
+              {awardDatas?.map((data) => (
+                <AwardView
+                  key={data._id}
+                  awardData={data}
+                  isEditable={isEditable}
+                />
+              ))}
             </Card.Text>
 
             <ButtonWrapper>

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { combineReducers } from 'redux';
 import loading from './loading';
 import user from './user';
@@ -7,8 +6,10 @@ import profile from './profile';
 import users from './users';
 import education from './education';
 import award from './award';
-import project from './project';
 import certificate from './certificate';
+import project from './project';
+import music from './music';
+import musics from './musics';
 
 const rootReducer = combineReducers({
   loading,
@@ -18,8 +19,10 @@ const rootReducer = combineReducers({
   users,
   education,
   award,
-  project,
   certificate,
+  project,
+  music,
+  musics,
 });
 
 export default rootReducer;

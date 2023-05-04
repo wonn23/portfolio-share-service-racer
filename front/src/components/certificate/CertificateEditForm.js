@@ -1,25 +1,25 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { Button, Form, FloatingLabel } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import useInput from 'hooks/useInput';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import Modals from 'components/common/Modals';
 import DatePicker from 'react-datepicker';
 import { updateCertificate } from 'modules/sagas/certificate';
+import moment from 'moment-timezone';
 
 const CertificateEditForm = ({ certificateData, setIsEditing }) => {
   const [modalShow, setModalShow] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const dispatch = useDispatch();
 
-  const [certificateName, onChangeCertificateName] = useInput(certificateData.certificateName);
-  const [certificateLink, onChangeCertificateLink] = useInput(certificateData.certificateLink);
-  const [introduction, onChangeIntroduction] = useInput(certificateData.introduction);
-  const [startDate, onChangeStartDate] = useState(certificateData.startDate);
-  const [myRole, onChangeMyRole] = useInput(certificateData.myRole);
-  const [detail, onChangeDetail] = useInput(certificateData.detail);
+  const [agency, onChangeAgency] = useInput(certificateData.agency);
+  const [credit, onChangeCredit] = useInput(certificateData.credit);
+  const [grade, onChangeGrade] = useInput(certificateData.grade);
+  const [acquireDate, onChangeAcquireDate] = useState(
+    moment(certificateData.startDate).tz('Asia/Seoul'),
+  );
 
   const onSubmitForm = (e) => {
     e.preventDefault();
@@ -28,38 +28,28 @@ const CertificateEditForm = ({ certificateData, setIsEditing }) => {
 
   useEffect(() => {
     if (isConfirmed) {
-      const { id } = certificateData;
+      const { _id } = certificateData;
       const updatedCertificateData = {
-        id,
-        certificateName,
-        certificateLink,
-        introduction,
-        startDate,
-        myRole,
-        detail,
+        _id,
+        agency,
+        credit,
+        grade,
+        acquireDate,
       };
-
-      // 백앤드와 협의
-      // Update API Dispatch [PATCH, PUT 타입]
-      // educationDataID 필요함
-      // 하지만 백엔드 완성 전 리덕스를 활용하여 faker 데이터들 테스트
-
       dispatch(updateCertificate(updatedCertificateData));
       console.log(updatedCertificateData);
 
       setIsEditing(false);
     }
   }, [
+    agency,
+    credit,
     dispatch,
-    certificateData,
-    setIsEditing,
     isConfirmed,
-    certificateName,
-    certificateLink,
-    introduction,
-    startDate,
-    myRole,
-    detail,
+    grade,
+    setIsEditing,
+    acquireDate,
+    certificateData,
   ]);
 
   const onClick = () => {
@@ -74,64 +64,50 @@ const CertificateEditForm = ({ certificateData, setIsEditing }) => {
         controlid="formEducation"
         style={{ marginLeft: '0px' }}
       >
-        <Form.Group controlid="formSchool" style={{ marginBottom: '12px' }}>
+        <Form.Group controlid="formAgency" style={{ marginBottom: '12px' }}>
           <Form.Control
             type="text"
-            placeholder="프로젝트명을 입력해주세요."
-            value={certificateName}
-            onChange={onChangeCertificateName}
+            placeholder="발급기관을 입력해 주세요."
+            value={agency}
+            onChange={onChangeAgency}
           />
         </Form.Group>
 
-        <Form.Group controlid="formContest" style={{ marginBottom: '12px' }}>
+        <Form.Group controlid="formCredit" style={{ marginBottom: '12px' }}>
           <Form.Control
             type="text"
-            placeholder="프로젝트 링크를 입력해주세요."
-            value={certificateLink}
-            onChange={onChangeCertificateLink}
+            placeholder="자격증명을 입력해 주세요."
+            value={credit}
+            onChange={onChangeCredit}
           />
         </Form.Group>
 
-        <Form.Group controlid="formPrize" style={{ marginBottom: '12px' }}>
+        <Form.Group controlid="formGrade" style={{ marginBottom: '12px' }}>
           <Form.Control
             type="text"
-            placeholder="프로젝트 소개를 입력해주세요."
-            value={introduction}
-            onChange={onChangeIntroduction}
+            placeholder="등급 및 점수를 입력해 주세요."
+            value={grade}
+            onChange={onChangeGrade}
           />
         </Form.Group>
 
-        <Form.Group controlid="formDate" style={{ marginBottom: '12px' }}>
-          <DatePicker
-            selected={startDate}
-            placeholder="프로젝트 기간을 입력해주세요."
-            onChange={(date) => onChangeStartDate(date)}
-            withPortal
-          />
-        </Form.Group>
-
-        <Form.Group controlid="formPrize" style={{ marginBottom: '12px' }}>
-          <Form.Control
-            type="text"
-            placeholder="나의 역할을 입력해 주세요."
-            value={myRole}
-            onChange={onChangeMyRole}
-          />
-        </Form.Group>
-
-        <FloatingLabel
-          controlId="floatingTextarea"
-          label="상세 설명"
-          className="mb-3"
+        <Form.Group
+          controlid="formAcquireDate"
+          style={{ marginBottom: '12px' }}
         >
-          <Form.Control
-            as="textarea"
-            className="form-control"
-            placeholder="Leave a comment here"
-            value={detail}
-            onChange={onChangeDetail}
-          />
-        </FloatingLabel>
+          <Form.Group
+            controlid="formStartDate"
+            style={{ marginBottom: '12px' }}
+          >
+            <DatePicker
+              selected={acquireDate.toDate()}
+              onChange={(date) =>
+                onChangeAcquireDate(moment(date).tz('Asia/Seoul'))
+              }
+              withPortal
+            />
+          </Form.Group>
+        </Form.Group>
 
         <ButtonWrapper>
           <Button

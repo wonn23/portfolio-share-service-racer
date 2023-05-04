@@ -1,17 +1,23 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button, Container, Col, Row } from 'react-bootstrap';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { deleteCertificate } from 'modules/sagas/certificate';
+import moment from 'moment-timezone';
+import toDateString from 'lib/util/toDate';
 
 const CertificateCard = ({ certificateData, isEditable, setIsEditing }) => {
+  const dispatch = useDispatch();
   const onClick = () => {
     setIsEditing(true);
   };
 
-  useEffect(() => {
-    console.log(certificateData);
-  }, [certificateData]);
+  const onClickDelete = () => {
+    dispatch(deleteCertificate(certificateData._id));
+  };
 
   return (
     <Container style={{ margin: '12px 0px' }}>
@@ -19,23 +25,23 @@ const CertificateCard = ({ certificateData, isEditable, setIsEditing }) => {
         <Col sm="6">
           <Row>
             <Col sm="auto" style={{ padding: '0', margin: '0', color: 'blue' }}>
-              자격명 |
+              발급기관 |
             </Col>
             <Col sm="auto" style={{ padding: '0 0 0 4px', margin: '0' }}>
-              {certificateData.certificateName}
+              {certificateData.agency}
             </Col>
           </Row>
           <Row>
             <Col sm="auto" style={{ padding: '0', margin: '0', color: 'blue' }}>
-              발급처 |
+              자격증명 |
             </Col>
             <Col sm="auto" style={{ padding: '0 0 0 4px', margin: '0' }}>
-              {certificateData.issueAgency}
+              {certificateData.credit}
             </Col>
           </Row>
           <Row>
             <Col sm="auto" style={{ padding: '0', margin: '0', color: 'blue' }}>
-              등급 |
+              등급 및 점수 |
             </Col>
             <Col sm="auto" style={{ padding: '0 0 0 4px', margin: '0' }}>
               {certificateData.grade}
@@ -43,19 +49,31 @@ const CertificateCard = ({ certificateData, isEditable, setIsEditing }) => {
           </Row>
           <Row>
             <Col sm="auto" style={{ padding: '0', margin: '0', color: 'blue' }}>
-              취득일 |
+              취득 일자 |
             </Col>
             <Col sm="auto" style={{ padding: '0 0 0 4px', margin: '0' }}>
-              {certificateData.acquisitionDate.toLocaleDateString('ko-KR')}
+              {`${toDateString(
+                moment(certificateData.startDate).tz('Asia/Seoul'),
+              )}`}
             </Col>
           </Row>
+
           <RowWrapper />
         </Col>
         <Col sm="2">
           {isEditable && (
-            <Button variant="outline-primary" size="sm" onClick={onClick}>
-              편집
-            </Button>
+            <ButtonWrapper>
+              <Button variant="outline-primary" size="sm" onClick={onClick}>
+                편집
+              </Button>
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={onClickDelete}
+              >
+                삭제
+              </Button>
+            </ButtonWrapper>
           )}
         </Col>
       </Row>
@@ -75,4 +93,9 @@ const RowWrapper = styled(Row)`
 
   padding: 12px 0 0 12px;
   width: 100%;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
 `;
