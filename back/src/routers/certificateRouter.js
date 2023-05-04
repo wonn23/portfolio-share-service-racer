@@ -2,24 +2,17 @@ import { Router } from "express";
 import { tokenValidator } from "../middlewares/tokenValidator";
 import { validationParams } from "../utils/parameterValidator";
 
-import { userAuthService } from "../services/userService";
 import { CertificateModel } from "../db/schemas/certificate";
 import { certificateService } from "../services/certificateService";
 
 const certificateRouter = Router();
+// certificate 생성, 조회, 수정, 삭제 시 로그인되어있는지 확인
 certificateRouter.use(tokenValidator);
 
-/**
- * @description
- *      로그인 세션을 체크하고
- *      세션id로 user를 찾은 후
- *      해당 유저의 Certificate 를 추가합니다.
- *
- * @param
- *      {title,description}
- */
+// 해당 user의 certificate 추가
 certificateRouter.post("/create", async function (req, res, next) {
   try {
+    // body 데이터를 가져와 비어있는지 확인
     const params = Object.values(req.body);
     if (!validationParams(params)) {
       console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
@@ -41,9 +34,8 @@ certificateRouter.post("/create", async function (req, res, next) {
       acquireDate,
     });
 
-    const created = await certificateService.createCertificate({
-      newCertificate,
-    });
+    // DB에 newCertificate 객체 추가
+    const created = await certificateService.createCertificate({ newCertificate });
 
     if (!created) {
       console.log("데이터베이스 입력에 실패했습니다.");
@@ -57,14 +49,7 @@ certificateRouter.post("/create", async function (req, res, next) {
   }
 });
 
-/**
- * @description
- *      /education/list 로  post 요청시
- *      특정 user의 모든 education 정보를
- *      Array 로 응답합니다.
- *
- * @param {email: "String"}
- */
+// userId로 해당 유저의 award 전체 조회
 certificateRouter.get("/:userId", async function (req, res, next) {
   try {
     const { userId } = req.params;
@@ -78,18 +63,11 @@ certificateRouter.get("/:userId", async function (req, res, next) {
   }
 });
 
-/*
- * @description
- *      /education/update 로 Post 요청시
- *      userid,school,major,status
- *      를 DB에 업데이트합니다.
- *
- *      @params
- *      {userId,school, major, status}
- */
+// _id로 certificate 수정
 certificateRouter.put("/:_id", async function (req, res, next) {
   try {
     const { _id } = req.params;
+
     // body data 로부터 업데이트할 사용자 정보를 추출함.
     const { userId, agency, credit, grade, acquireDate } = req.body ?? null;
 
@@ -99,7 +77,7 @@ certificateRouter.put("/:_id", async function (req, res, next) {
 
     const toUpdate = { agency, credit, grade, acquireDate };
 
-    // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
+    // 해당 사용자 아이디로 사용자 정보를 DB에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
     const updateCertificate = await certificateService.updateCertificate({
       _id,
       userId,
@@ -112,21 +90,18 @@ certificateRouter.put("/:_id", async function (req, res, next) {
   }
 });
 
-certificateRouter.delete(
-  "/:_id",
-  tokenValidator,
-  async function (req, res, next) {
-    const _id = req.params._id;
-    try {
-      const result = await certificateService.deleteCertificate({ _id });
-      if (result.errorMessage) {
-        throw new Error(result.errorMessage);
-      }
-      res.status(200).send(result);
-    } catch (error) {
-      next(error);
+// _id로 certificate 삭제
+certificateRouter.delete("/:_id", async function (req, res, next) {
+  const _id = req.params._id;
+  try {
+    const result = await certificateService.deleteCertificate({ _id });
+    if (result.errorMessage) {
+      throw new Error(result.errorMessage);
     }
+    res.status(200).send(result);
+  } catch (error) {
+    next(error);
   }
-);
+});
 
 export { certificateRouter };

@@ -23,14 +23,14 @@ app.get("/", (req, res) => {
 // router, service 구현 (userAuthRouter는 맨 위에 있어야 함.)
 app.use(userAuthRouter);
 
-app.get("/education");
-app.use("/education", educationRouter);
-
 app.get("/award");
 app.use("/award", awardRouter);
 
 app.get("/certificate");
 app.use("/certificate", certificateRouter);
+
+app.get("/education");
+app.use("/education", educationRouter);
 
 app.get("/project");
 app.use("/project", projectRouter);

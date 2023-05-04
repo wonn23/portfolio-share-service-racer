@@ -14,7 +14,6 @@ class certificateService {
         "해당 id를 가진 자격증 데이터는 없습니다. 다시 한 번 확인해 주세요.";
       return { errorMessage };
     }
-
     return certificate;
   }
 
@@ -22,12 +21,12 @@ class certificateService {
     const certificate = await Certificate.findById({ userId });
 
     if (!certificate) {
-      return { errorMessage: "Certificate not found." };
+      return { errorMessage: "해당 id를 가진 자격증 데이터를 찾을 수 없습니다." };
     }
 
     if (certificate.user && certificate.user._id.toString() !== userId) {
       return {
-        errorMessage: "User is not authorized to edit this certificate.",
+        errorMessage: "해당 id를 가진 자격증 데이터를 수정할 수 없습니다.",
       };
     }
 

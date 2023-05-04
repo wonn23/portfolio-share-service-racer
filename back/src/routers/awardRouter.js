@@ -70,8 +70,7 @@ awardRouter.put("/:_id", async function (req, res, next) {
     const { _id } = req.params;
 
     // body data 로부터 업데이트할 사용자 정보를 추출함.
-    const { userId, association, contest, startDate, prize, detail } =
-      req.body ?? null;
+    const { userId, association, contest, startDate, prize, detail } = req.body ?? null;
 
     if (!userId) {
       throw new Error("해당 유저 아이디가 없습니다. 다시 확인해 주세요.");

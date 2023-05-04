@@ -21,11 +21,11 @@ class awardService {
     const award = await Award.findById({ userId });
 
     if (!award) {
-      return { errorMessage: "Award not found." };
+      return { errorMessage: "해당 id를 가진 수상 데이터를 찾을 수 없습니다." };
     }
 
     if (award.user && award.user._id.toString() !== userId) {
-      return { errorMessage: "User is not authorized to edit this award." };
+      return { errorMessage: "해당 id를 가진 수상 데이터를 수정할 수 없습니다." };
     }
 
     const updateObj = { userId, ...toUpdate };
