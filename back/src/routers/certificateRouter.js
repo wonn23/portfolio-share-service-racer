@@ -49,7 +49,7 @@ certificateRouter.post("/create", async function (req, res, next) {
   }
 });
 
-// userId로 해당 유저의 award 전체 조회
+// userId로 해당 유저의 certificate 전체 조회
 certificateRouter.get("/:userId", async function (req, res, next) {
   try {
     const { userId } = req.params;
