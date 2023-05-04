@@ -28,18 +28,17 @@ certificateRouter.post("/create", async function (req, res, next) {
       });
       return;
     }
-    const { agency, credit, grade, acquireDate } = req.body; // userId 오브젝트 아이디 아님
-    const user_id = req.currentUserId;
+    const { agency, credit, grade, acquireDate } = req.body;
 
-    const user = await userAuthService.getUserInfo({ user_id });
+    const userId = req.currentUserId;
+    console.log(`user Service : ${userId}`);
 
-    console.log(`user Service : ${user._id}`);
     const newCertificate = new CertificateModel({
-      userId: user._id,
-      agency: agency,
-      credit: credit,
-      grade: grade,
-      acquireDate: acquireDate,
+      userId,
+      agency,
+      credit,
+      grade,
+      acquireDate,
     });
 
     const created = await certificateService.createCertificate({

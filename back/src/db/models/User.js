@@ -10,7 +10,7 @@ class User {
   }
 
   static async findById({ user_id }) {
-    return await UserModel.findOne({ id: user_id });
+    return await UserModel.findOne({ user_id });
   }
 
   static async findAll() {

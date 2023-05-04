@@ -28,16 +28,15 @@ educationRouter.post("/create", async function (req, res, next) {
       return;
     }
     const { school, major, status } = req.body;
-    const user_id = req.currentUserId;
 
-    const user = await userAuthService.getUserInfo({ user_id });
+    const userId = req.currentUserId;
+    console.log(`user Service : ${userId}`);
 
-    console.log(`user Service : ${user._id}`);
     const newEducation = new EducationModel({
-      userId: user._id,
-      school: school,
-      major: major,
-      status: status,
+      userId,
+      school,
+      major,
+      status,
     });
 
     const created = await educationService.createEducation({ newEducation });

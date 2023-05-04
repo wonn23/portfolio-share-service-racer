@@ -27,19 +27,18 @@ projectRouter.post("/create", async (req, res, next) => {
       myRole,
       detail,
     } = req.body;
-    const user_id = req.currentUserId;
 
-    const user = await userAuthService.getUserInfo({ user_id });
+    const userId = req.currentUserId;
+    console.log(`user Service : ${userId}`);
 
-    console.log(`user Service : ${user._id}`);
     const newProject = new ProjectModel({
-      userId: user._id,
-      projectName: projectName,
-      projectLink: projectLink,
-      introduction: introduction,
-      startDate: startDate,
-      myRole: myRole,
-      detail: detail,
+      userId,
+      projectName,
+      projectLink,
+      introduction,
+      startDate,
+      myRole,
+      detail,
     });
 
     const created = await projectService.createProject({ newProject });

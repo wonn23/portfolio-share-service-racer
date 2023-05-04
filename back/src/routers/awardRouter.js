@@ -2,16 +2,17 @@ import { Router } from "express";
 import { tokenValidator } from "../middlewares/tokenValidator";
 import { validationParams } from "../utils/parameterValidator";
 
-import { userAuthService } from "../services/userService";
 import { AwardModel } from "../db/schemas/award";
 import { awardService } from "../services/awardService";
 
 const awardRouter = Router();
+// award 생성, 조회, 수정, 삭제 시 로그인되어있는지 확인
 awardRouter.use(tokenValidator);
 
 // 해당 user의 award 추가
 awardRouter.post("/create", async function (req, res, next) {
   try {
+    // body 데이터를 가져와 비어있는지 확인
     const params = Object.values(req.body);
     if (!validationParams(params)) {
       console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
@@ -20,21 +21,21 @@ awardRouter.post("/create", async function (req, res, next) {
       });
       return;
     }
-    const { association, contest, startDate, prize, detail } = req.body; // userId 오브젝트 아이디 아님
-    const user_id = req.currentUserId;
+    const { association, contest, startDate, prize, detail } = req.body;
 
-    const user = await userAuthService.getUserInfo({ user_id });
+    const userId = req.currentUserId;
+    console.log(`user Service : ${userId}`);
 
-    console.log(`user Service : ${user._id}`);
     const newAward = new AwardModel({
-      userId: user._id,
-      association: association,
-      contest: contest,
-      startDate: startDate,
-      prize: prize,
-      detail: detail,
+      userId,
+      association,
+      contest,
+      startDate,
+      prize,
+      detail,
     });
 
+    // DB에 newAward 객체 추가
     const created = await awardService.createAward({ newAward });
 
     if (!created) {
@@ -49,7 +50,7 @@ awardRouter.post("/create", async function (req, res, next) {
   }
 });
 
-// userId로 award 조회
+// userId로 해당 유저의 award 전체 조회
 awardRouter.get("/:userId", async function (req, res, next) {
   try {
     const { userId } = req.params;
@@ -63,10 +64,11 @@ awardRouter.get("/:userId", async function (req, res, next) {
   }
 });
 
-// award 수정
+// _id로 award 수정
 awardRouter.put("/:_id", async function (req, res, next) {
   try {
     const { _id } = req.params;
+
     // body data 로부터 업데이트할 사용자 정보를 추출함.
     const { userId, association, contest, startDate, prize, detail } =
       req.body ?? null;
@@ -77,7 +79,7 @@ awardRouter.put("/:_id", async function (req, res, next) {
 
     const toUpdate = { association, contest, startDate, prize, detail };
 
-    // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
+    // 해당 사용자 아이디로 사용자 정보를 DB에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
     const updateAward = await awardService.updateAward({
       _id,
       userId,
@@ -90,7 +92,8 @@ awardRouter.put("/:_id", async function (req, res, next) {
   }
 });
 
-awardRouter.delete("/:_id", tokenValidator, async function (req, res, next) {
+// _id로 award 삭제
+awardRouter.delete("/:_id", async function (req, res, next) {
   const _id = req.params._id;
   try {
     const result = await awardService.deleteAward({ _id });
