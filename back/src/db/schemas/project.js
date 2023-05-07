@@ -2,19 +2,34 @@ import mongoose, { Schema, model } from "mongoose";
 
 const ProjectSchema = new Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    title: {
+    projectName: {
       type: String,
       required: true,
     },
-    description: {
+    projectLink: {
       type: String,
-      required: false,
-      default: "none",
+      required: true,
+    },
+    introduction: {
+      type: String,
+      required: true,
+    },
+    startDate: {
+      type: String,
+      required: true,
+    },
+    myRole: {
+      type: String,
+      required: true,
+    },
+    detail: {
+      type: String,
+      required: true,
     },
   },
   {

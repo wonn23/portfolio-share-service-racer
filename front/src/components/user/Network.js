@@ -1,36 +1,73 @@
-import React, { useEffect, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Container, Row } from "react-bootstrap";
+/* eslint-disable no-shadow */
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Container, Row } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUsers } from 'modules/sagas/users';
+import styled from 'styled-components';
 
-import * as Api from "../../api";
-import UserCard from "./UserCard";
-import { UserStateContext } from "../../App";
+import UserCard from './UserCard';
 
 function Network() {
   const navigate = useNavigate();
-  const userState = useContext(UserStateContext);
-  // useState 훅을 통해 users 상태를 생성함.
-  const [users, setUsers] = useState([]);
+  const dispatch = useDispatch();
+  const { users, errorUsers, user, loading } = useSelector(
+    ({ users, user, loading }) => ({
+      users: users.users,
+      errorUsers: users.error,
+      user: user.user,
+      loading: loading['users/GET_USERS'],
+    }),
+  );
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // 만약 전역 상태의 user가 null이라면, 로그인 페이지로 이동함.
-    if (!userState.user) {
-      navigate("/login");
+    if (!user) {
+      navigate('/login');
       return;
     }
-    // "userlist" 엔드포인트로 GET 요청을 하고, users를 response의 data로 세팅함.
-    Api.get("userlist").then((res) => setUsers(res.data));
-  }, [userState, navigate]);
+
+    dispatch(getUsers());
+  }, [user, navigate, dispatch]);
+
+  useEffect(() => {
+    if (errorUsers) {
+      setError(errorUsers);
+    }
+  }, [errorUsers]);
+
+  if (error) {
+    return <ErrorMessage>에러발생</ErrorMessage>;
+  }
+
+  if (loading) {
+    return 'loading...';
+  }
 
   return (
-    <Container fluid>
-      <Row xs="auto" className="jusify-content-center">
-        {users.map((user) => (
-          <UserCard key={user.id} user={user} isNetwork />
-        ))}
-      </Row>
-    </Container>
+    <div>
+      {!loading && (
+        <Container fluid>
+          <Row xs="auto" className="jusify-content-center">
+            {!loading && users && (
+              <div>
+                {users.map((user) => (
+                  <UserCard key={user.id} user={user} isNetwork />
+                ))}{' '}
+              </div>
+            )}
+          </Row>
+        </Container>
+      )}
+    </div>
   );
 }
 
 export default Network;
+
+const ErrorMessage = styled.div`
+  color: red;
+  text-align: center;
+  font-size: 1rem;
+  margin-top: 1rem;
+`;

@@ -2,16 +2,24 @@ import mongoose, { Schema, model } from "mongoose";
 
 const CertificateSchema = new Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    title: {
+    agency: {
       type: String,
       required: true,
     },
-    description: {
+    credit: {
+      type: String,
+      required: true,
+    },
+    grade: {
+      type: String,
+      required: true,
+    },
+    acquireDate: {
       type: String,
       required: true,
     },
@@ -21,6 +29,6 @@ const CertificateSchema = new Schema(
   }
 );
 
-const CertificateModel = model("certificate", CertificateSchema);
+const CertificateModel = model("Certificate", CertificateSchema);
 
 export { CertificateModel };

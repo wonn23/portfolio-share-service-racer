@@ -46,6 +46,11 @@
         "explicitSpread": "ignore",
         "exceptions": "ignore"
       }
+    ],
+
+    "no-param-reassign": [
+      "error",
+      { "props": true, "ignorePropertyModificationsFor": ["draft"] }
     ]
   },
   "settings": {

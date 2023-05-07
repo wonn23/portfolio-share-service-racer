@@ -1,8 +1,8 @@
-import is from "@sindresorhus/is";
 import { Router } from "express";
 import { tokenValidator } from "../middlewares/tokenValidator";
-import { userAuthService } from "../services/userService";
 import {validationParams} from "../utils/parameterValidator";
+
+import { userAuthService } from "../services/userService";
 
 const userAuthRouter = Router();
 
@@ -109,6 +109,30 @@ userAuthRouter.post(
             }
 
             res.status(200).send({id:current._id,email:current.email,name:current.name});
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+userAuthRouter.get(
+    "/user/current",
+    tokenValidator,
+    async function (req, res, next) {
+        try {
+            const user_id = req.currentUserId;
+            if(!user_id){
+                res.status(404).json({message:"유저를 찾을 수 없습니다."})
+            }
+            const current = await userAuthService.getUserInfo({
+                user_id,
+            });
+
+            if (current.errorMessage) {
+                throw new Error(current.errorMessage);
+            }
+            console.log(`id : ${current._id} name: ${current.name}`);
+            res.status(200).send(current);
         } catch (error) {
             next(error);
         }

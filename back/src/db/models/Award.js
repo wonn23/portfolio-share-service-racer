@@ -1,38 +1,26 @@
 import { AwardModel } from "../schemas/award";
 
 class Award {
-  static async create({ newAward }) {
-    const createdNewAward = await AwardModel.create(newAward);
-    return createdNewAward;
+  static async createAward({ newAward }) {
+    return AwardModel.create(newAward);
   }
 
-  static async findById({ awardId }) {
-    const award = await AwardModel.findOne({ id: awardId });
-    return award;
+  static async findById({ userId }) {
+    return AwardModel.findOne({ userId: userId });
   }
 
   static async findByUserId({ userId }) {
-    const awards = await AwardModel.find({ userId });
-    return awards;
+    return AwardModel.find({ userId });
   }
 
-  static async update({ awardId, fieldToUpdate, newValue }) {
-    const filter = { id: awardId };
-    const update = { [fieldToUpdate]: newValue };
-    const option = { returnOriginal: false };
-
-    const updatedAward = await AwardModel.findOneAndUpdate(
-      filter,
-      update,
-      option
-    );
-    return updatedAward;
+  static async findByIdAndUpdate({ _id }, update) {
+    return AwardModel.findOneAndUpdate({ _id }, update, {
+      new: true,
+    });
   }
 
-  static async deleteById({ awardId }) {
-    const deleteResult = await AwardModel.deleteOne({ id: awardId });
-    const isDataDeleted = deleteResult.deletedCount === 1;
-    return isDataDeleted;
+  static async deleteById({ _id }) {
+    return AwardModel.findByIdAndDelete(_id);
   }
 }
 

@@ -1,5 +1,5 @@
 
-export function ErrorHandler(error, req, res, next){
+export function errorHandler(error, req, res, next){
     console.log("\x1b[33m%s\x1b[0m", error);
     if(error.status === 400){
         res.status(400).json({message:"잘못된 요청입니다."});

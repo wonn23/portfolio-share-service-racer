@@ -1,91 +1,128 @@
-import is from "@sindresorhus/is";
 import { Router } from "express";
-import { login_required } from "../middlewares/login_required";
-import { ProjectService } from "../services/projectService";
+import { tokenValidator } from "../middlewares/tokenValidator";
+import { validationParams } from "../utils/parameterValidator";
+
+import { ProjectModel } from "../db/schemas/project";
+import { projectService } from "../services/projectService";
 
 const projectRouter = Router();
-projectRouter.use(login_required);
+// project 생성, 조회, 수정, 삭제 시 로그인되어있는지 확인
+projectRouter.use(tokenValidator);
 
-projectRouter.post("/project/create", async function (req, res, next) {
+// 해당 user의 project 추가
+projectRouter.post("/create", async function (req, res, next) {
   try {
-    if (is.emptyObject(req.body)) {
-      throw new Error(
-        "headers의 Content-Type을 application/json으로 설정해주세요"
-      );
+    // body 데이터를 가져와 비어있는지 확인
+    const params = Object.values(req.body);
+    if (!validationParams(params)) {
+      console.log("비어있는 데이터가 존재합니다. 확인후 요청해주세요.");
+      res.status(404).send({
+        message: "비어있는 데이터가 존재합니다. 확인후 요청해주세요.",
+      });
+      return;
     }
-    const user_id = req.body.user_id;
-    const title = req.body.title;
-    const description = req.body.description;
+    const {
+      projectName,
+      projectLink,
+      introduction,
+      startDate,
+      myRole,
+      detail,
+    } = req.body;
 
-    const newProject = await ProjectService.addProject({
-      user_id,
-      title,
-      description,
+    const userId = req.currentUserId;
+    console.log(`user Service : ${userId}`);
+
+    const newProject = new ProjectModel({
+      userId,
+      projectName,
+      projectLink,
+      introduction,
+      startDate,
+      myRole,
+      detail,
     });
 
-    res.staus(201).json(newProject);
+    // DB에 newProject 객체 추가
+    const created = await projectService.createProject({ newProject });
+
+    if (!created) {
+      console.log("데이터베이스 입력에 실패했습니다.");
+      res.status(404).json({ message: "데이터베이스 입력에 실패했습니다." });
+      return;
+    }
+    console.log("데이터베이스 입력에 성공했습니다.");
+    res.status(200).json({ message: "데이터베이스 입력 되었습니다." });
   } catch (error) {
     next(error);
   }
 });
 
-projectRouter.get("/projects/:id", async function (req, res, next) {
+// userId로 해당 유저의 project 전체 조회
+projectRouter.get("/:userId", async function (req, res, next) {
   try {
-    const projectId = req.params.id;
+    const { userId } = req.params;
+    const projectList = await projectService.getProject({ userId });
+    if (projectList.errorMessage) {
+      throw new Error(projectList.errorMessage);
+    }
+    return res.status(200).send(projectList);
+  } catch (e) {
+    next(e);
+  }
+});
 
-    const project = await ProjectService.getProject({ projectId });
+// _id로 project 수정
+projectRouter.put("/:_id", async function (req, res, next) {
+  try {
+    const { _id } = req.params;
 
-    if (project.errorMessage) {
-      throw new Error(project.errorMessage);
+    // body data 로부터 업데이트할 사용자 정보를 추출함.
+    const {
+      userId,
+      projectName,
+      projectLink,
+      introduction,
+      startDate,
+      myRole,
+      detail,
+    } = req.body ?? null;
+
+    if (!userId) {
+      throw new Error("해당 유저 아이디가 없습니다. 다시 확인해 주세요.");
     }
 
-    res.status(200).send(project);
+    const toUpdate = {
+      projectName,
+      projectLink,
+      introduction,
+      startDate,
+      myRole,
+      detail,
+    };
+
+    // 해당 사용자 아이디로 사용자 정보를 DB에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
+    const updateProject = await projectService.updateProject({
+      _id,
+      userId,
+      toUpdate,
+    });
+
+    res.status(200).json(updateProject);
   } catch (error) {
     next(error);
   }
 });
 
-projectRouter.put("/projects/:id", async function (req, res, next) {
+// _id로 project 삭제
+projectRouter.delete("/:_id", async function (req, res, next) {
+  const _id = req.params._id;
   try {
-    const projectId = req.params.id;
-    const title = req.body.title ?? null;
-    const description = req.body.description ?? null;
-
-    const toUpdate = { title, description };
-
-    const project = await ProjectService.setProject({ projectId, toUpdate });
-
-    if (project.errorMessage) {
-      throw new Error(project.errorMessage);
-    }
-
-    res.status(200).send(project);
-  } catch (error) {
-    next(error);
-  }
-});
-
-projectRouter.delete("/projects/:id", async function (req, res, next) {
-  try {
-    const projectId = req.params.id;
-
-    const result = await ProjectService.deleteProject({ projectId });
-
+    const result = await projectService.deleteProject({ _id });
     if (result.errorMessage) {
       throw new Error(result.errorMessage);
     }
-
     res.status(200).send(result);
-  } catch (error) {
-    next(error);
-  }
-});
-
-projectRouter.get("/projectlist/:user_id", async function (req, res, next) {
-  try {
-    const user_id = req.params.user_id;
-    const projectList = await ProjectService.getProjectList({ user_id });
-    res.status(200).send(projectList);
   } catch (error) {
     next(error);
   }

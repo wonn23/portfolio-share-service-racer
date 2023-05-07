@@ -2,16 +2,12 @@ import mongoose, { Schema, model } from "mongoose";
 
 const EducationSchema = new Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    institution: {
-      type: String,
-      required: true,
-    },
-    degree: {
+    school: {
       type: String,
       required: true,
     },
@@ -19,12 +15,8 @@ const EducationSchema = new Schema(
       type: String,
       required: true,
     },
-    startDate: {
-      type: Date,
-      required: true,
-    },
-    endDate: {
-      type: Date,
+    status: {
+      type: String,
       required: true,
     },
   },
@@ -33,6 +25,6 @@ const EducationSchema = new Schema(
   }
 );
 
-const EducationModel = model("education", EducationSchema);
+const EducationModel = model("Education", EducationSchema);
 
 export { EducationModel };
